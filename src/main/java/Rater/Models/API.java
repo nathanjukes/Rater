@@ -16,6 +16,10 @@ public class API {
     private UUID orgId;
     private int apiLimit;
 
+    /*@ManyToOne
+    @JoinColumn(name="service_id", nullable=false)
+    private Service service;*/
+
     @JsonCreator
     public API(String api, UUID orgId, int apiLimit) {
         this.api = api;
