@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrgService {
@@ -22,7 +23,15 @@ public class OrgService {
         orgRepository.save(org);
     }
 
+    public Optional<Org> getOrg(UUID orgId) {
+        return orgRepository.findById(orgId);
+    }
+
     public Optional<List<Org>> getOrgs() {
         return Optional.of(orgRepository.findAll());
+    }
+
+    public void deleteOrg(UUID orgId) {
+        orgRepository.deleteById(orgId);
     }
 }

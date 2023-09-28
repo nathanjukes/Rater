@@ -23,11 +23,6 @@ public class TargetController {
         this.apiService = apiService;
     }
 
-    @RequestMapping(value = "/{api}", method = GET)
-    public ResponseEntity<Optional<API>> getApi(@PathVariable String api) {
-        return ResponseEntity.ok(apiService.getByName(api));
-    }
-
     @RequestMapping(value = "/id/{id}", method = GET)
     public ResponseEntity<Optional<API>> getApi(@PathVariable UUID id) {
         return ResponseEntity.ok(apiService.getById(id));
@@ -35,12 +30,12 @@ public class TargetController {
 
     @RequestMapping(value = "", method = GET)
     public ResponseEntity<Optional<List<API>>> getAPIs() {
-        return ResponseEntity.ok(apiService.getAll());
+        return ResponseEntity.ok(apiService.getAPIs());
     }
 
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<String> createAPI(@RequestBody String name) {
-        apiService.createTarget(name);
+        //apiService.createAPI(name);
         return ResponseEntity.ok("TEST");
     }
 }

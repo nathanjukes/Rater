@@ -1,11 +1,12 @@
 package Rater.Repositories;
 
-import Rater.Models.App;
+import Rater.Models.Org;
+import Rater.Models.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface AppRepository extends JpaRepository<App, UUID> {
+public interface ServiceRepository extends JpaRepository<Service, UUID> {
 }

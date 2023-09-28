@@ -9,5 +9,4 @@ import java.util.UUID;
 
 @Repository
 public interface APIRepository extends JpaRepository<API, UUID> {
-    Optional<API> findByApi(String name);
 }

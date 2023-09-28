@@ -1,18 +1,24 @@
 package Rater.Models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "orgs", uniqueConstraints=@UniqueConstraint(columnNames = "id"))
+@Table(name = "orgs", uniqueConstraints=@UniqueConstraint(columnNames = "name"))
 public class Org {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+
     private String name;
-    @OneToMany(mappedBy = "org")
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "org", cascade = CascadeType.ALL)
     private Set<App> apps;
 
     public Org(String name) {

@@ -1,5 +1,6 @@
 package Rater.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -7,24 +8,24 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "apiDetails", uniqueConstraints=@UniqueConstraint(columnNames={"api", "orgId"}))
+@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"apiName", "service_id"}))
 public class API {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private String api;
-    private UUID orgId;
+    private String apiName;
     private int apiLimit;
 
-    /*@ManyToOne
-    @JoinColumn(name="service_id", nullable=false)
-    private Service service;*/
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name="service_id")
+    private Service service;
 
     @JsonCreator
-    public API(String api, UUID orgId, int apiLimit) {
-        this.api = api;
-        this.orgId = orgId;
+    public API(String apiName, int apiLimit, Service service) {
+        this.apiName = apiName;
         this.apiLimit = apiLimit;
+        this.service = service;
     }
 
     public API() {
@@ -39,20 +40,12 @@ public class API {
         this.id = id;
     }
 
-    public String getApi() {
-        return api;
+    public String getApiName() {
+        return apiName;
     }
 
-    public void setApi(String api) {
-        this.api = api;
-    }
-
-    public UUID getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(UUID orgId) {
-        this.orgId = orgId;
+    public void setApiName(String apiName) {
+        this.apiName = apiName;
     }
 
     public int getApiLimit() {
@@ -61,5 +54,25 @@ public class API {
 
     public void setApiLimit(int apiLimit) {
         this.apiLimit = apiLimit;
+    }
+
+    public Service getService() {
+        return service;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public UUID getServiceId() {
+        return service.getId();
+    }
+
+    public UUID getAppId() {
+        return service.getAppId();
+    }
+
+    public UUID getOrgId() {
+        return service.getOrgId();
     }
 }
