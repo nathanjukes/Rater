@@ -25,7 +25,7 @@ import static Rater.Util.FlatStructure.getFlatStructure;
 // Set rate limit on API id
 
 @RestController
-@RequestMapping("/rateLimit")
+@RequestMapping("/rateLimits")
 public class RateLimitController {
     private final APIService apiService;
 

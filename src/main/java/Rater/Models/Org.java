@@ -2,6 +2,7 @@ package Rater.Models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -15,6 +16,7 @@ public class Org {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @NotBlank
     private String name;
 
     @JsonManagedReference
@@ -51,5 +53,9 @@ public class Org {
 
     public void setApps(Set<App> apps) {
         this.apps = apps;
+    }
+
+    public static Org from(OrgCreateRequest orgCreateRequest) {
+        return new Org(orgCreateRequest.getName());
     }
 }

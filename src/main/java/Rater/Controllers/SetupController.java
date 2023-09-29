@@ -37,12 +37,6 @@ public class SetupController {
         this.apiService = apiService;
     }
 
-    @RequestMapping(value = "/{name}", method = POST)
-    public ResponseEntity<String> setupOrg(@PathVariable String name) {
-        orgService.createOrg(name);
-        return ResponseEntity.ok(name);
-    }
-
     @RequestMapping(value = "/{orgId}/{appName}", method = POST)
     public ResponseEntity<String> setupApp(@PathVariable UUID orgId,
                                            @PathVariable String appName) {
