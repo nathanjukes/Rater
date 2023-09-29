@@ -8,6 +8,7 @@ import Rater.Services.APIService;
 import Rater.Services.AppService;
 import Rater.Services.OrgService;
 import Rater.Services.ServiceService;
+import Rater.Util.FlatStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -105,5 +106,14 @@ public class SetupController {
     @RequestMapping(value = "/api", method = GET)
     public ResponseEntity<Optional<List<API>>> getAPIs() {
         return ResponseEntity.ok(apiService.getAPIs());
+    }
+
+    @RequestMapping(value = "/{orgName}/{appName}/{serviceName}/{apiName}", method = GET)
+    public ResponseEntity<Optional<API>> getOverallRateLimitResponse(@PathVariable String orgName,
+                                                                     @PathVariable String appName,
+                                                                     @PathVariable String serviceName,
+                                                                     @PathVariable String apiName) {
+        String flatStructure = FlatStructure.getFlatStructure(List.of(orgName, appName, serviceName, apiName));
+        return ResponseEntity.ok(apiService.getAPI(flatStructure));
     }
 }

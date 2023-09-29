@@ -8,13 +8,17 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"apiName", "service_id"}))
+@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"name", "service_id", "id"}))
 public class API {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private String apiName;
+
+    private String name;
+
     private int apiLimit;
+
+    private String flatStructure;
 
     @JsonBackReference
     @ManyToOne
@@ -22,10 +26,11 @@ public class API {
     private Service service;
 
     @JsonCreator
-    public API(String apiName, int apiLimit, Service service) {
-        this.apiName = apiName;
+    public API(String name, int apiLimit, Service service) {
+        this.name = name;
         this.apiLimit = apiLimit;
         this.service = service;
+        this.flatStructure = calculateFlatStructure();
     }
 
     public API() {
@@ -40,12 +45,12 @@ public class API {
         this.id = id;
     }
 
-    public String getApiName() {
-        return apiName;
+    public String getName() {
+        return name;
     }
 
-    public void setApiName(String apiName) {
-        this.apiName = apiName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getApiLimit() {
@@ -74,5 +79,20 @@ public class API {
 
     public UUID getOrgId() {
         return service.getOrgId();
+    }
+
+    public String getFlatStructure() {
+        return flatStructure == null ? calculateFlatStructure() : flatStructure;
+    }
+
+    public void setFlatStructure(String flatStructure) {
+        this.flatStructure = flatStructure;
+    }
+
+    private String calculateFlatStructure() {
+        Service service = getService();
+        App app = service.getApp();
+        Org org = app.getOrg();
+        return org.getName() + "/" + app.getName() + "/" + service.getName() + "/" + getName();
     }
 }

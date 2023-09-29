@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "apps", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "org_id"}))
+@Table(name = "apps", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "org_id", "id"}))
 public class App {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

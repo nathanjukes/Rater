@@ -1,6 +1,7 @@
 package Rater.Services;
 
 import Rater.Models.API;
+import Rater.Models.APIStatus;
 import Rater.Repositories.APIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,13 @@ public class APIService {
         this.serviceService = serviceService;
     }
 
-    public Optional<API> getById(UUID id) {
+    public Optional<API> getAPI(UUID id) {
         return apiRepository.findById(id);
     }
 
-    /*public Optional<API> getByName(String name) {
-        return apiRepository.findByApi(name);
-    }*/
+    public Optional<API> getAPI(String flatStructure) {
+        return apiRepository.findByFlatStructure(flatStructure);
+    }
 
     public Optional<List<API>> getAPIs() {
         return Optional.of(apiRepository.findAll());
@@ -40,5 +41,9 @@ public class APIService {
 
     public void deleteAPI(UUID id) {
         apiRepository.deleteById(id);
+    }
+
+    public APIStatus getAPIStatus(API api) {
+        return new APIStatus(api, 10);
     }
 }

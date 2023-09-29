@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "orgs", uniqueConstraints=@UniqueConstraint(columnNames = "name"))
+@Table(name = "orgs", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "id"}))
 public class Org {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -25,7 +25,7 @@ public class TargetController {
 
     @RequestMapping(value = "/id/{id}", method = GET)
     public ResponseEntity<Optional<API>> getApi(@PathVariable UUID id) {
-        return ResponseEntity.ok(apiService.getById(id));
+        return ResponseEntity.ok(apiService.getAPI(id));
     }
 
     @RequestMapping(value = "", method = GET)
