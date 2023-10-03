@@ -38,6 +38,7 @@ public class OrgController {
         return ResponseEntity.ok(orgService.getOrg(orgName));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = GET)
     public ResponseEntity<?> getOrgs(@RequestParam(required = false) UUID orgId) {
         if (orgId != null) {

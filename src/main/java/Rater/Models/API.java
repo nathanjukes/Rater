@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"name", "service_id", "id"}))
+@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"name", "service_id"}))
 public class API {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

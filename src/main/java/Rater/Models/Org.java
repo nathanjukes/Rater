@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "orgs", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "id"}))
+@Table(name = "orgs", uniqueConstraints=@UniqueConstraint(columnNames = {"name"}))
 public class Org {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,6 +22,10 @@ public class Org {
     @JsonManagedReference
     @OneToMany(mappedBy = "org", cascade = CascadeType.ALL)
     private Set<App> apps;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "org", cascade = CascadeType.ALL)
+    private Set<User> users;
 
     public Org(String name) {
         this.name = name;
@@ -53,6 +57,14 @@ public class Org {
 
     public void setApps(Set<App> apps) {
         this.apps = apps;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     public static Org from(OrgCreateRequest orgCreateRequest) {
