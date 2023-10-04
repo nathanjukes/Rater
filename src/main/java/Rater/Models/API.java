@@ -90,9 +90,6 @@ public class API {
     }
 
     private String calculateFlatStructure() {
-        Service service = getService();
-        App app = service.getApp();
-        Org org = app.getOrg();
-        return org.getName() + "/" + app.getName() + "/" + service.getName() + "/" + getName();
+        return service.getFlatStructure() + "/" + getName();
     }
 }

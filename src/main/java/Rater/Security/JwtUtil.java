@@ -29,13 +29,14 @@ public class JwtUtil implements Serializable {
 
     public String generateJwtToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        String username = userPrincipal.getUsername();
         Map<String, Object> claims = new HashMap<>();
-       // claims.put("orgId", orgName);
+        claims.put("orgName", "orgTesting");
 
         return Jwts
                 .builder()
-                .setSubject(userPrincipal.getUsername())
-                //.setClaims(claims)
+                .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(key(), SignatureAlgorithm.HS512)

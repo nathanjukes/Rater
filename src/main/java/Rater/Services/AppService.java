@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static Rater.Util.FlatStructure.getFlatStructure;
+
 @Service
 public class AppService {
     private final AppRepository appRepository;
@@ -34,6 +36,11 @@ public class AppService {
 
     public Optional<App> getApp(UUID id) {
         return appRepository.findById(id);
+    }
+
+    public Optional<App> getApp(Org org, String name) {
+        final String flatStructure = getFlatStructure(List.of(org.getName(), name));
+        return appRepository.findByFlatStructure(flatStructure);
     }
 
     public void deleteApp(UUID id) {

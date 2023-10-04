@@ -16,6 +16,8 @@ public class Service {
 
     private String name;
 
+    private String flatStructure;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
     private Set<API> apis;
@@ -28,6 +30,7 @@ public class Service {
     public Service(String name, App app) {
         this.name = name;
         this.app = app;
+        this.flatStructure = calculateFlatStructure();
     }
 
     public Service() {
@@ -72,5 +75,17 @@ public class Service {
 
     public UUID getOrgId() {
         return app.getOrgId();
+    }
+
+    public String getFlatStructure() {
+        return flatStructure == null ? calculateFlatStructure() : flatStructure;
+    }
+
+    public void setFlatStructure(String flatStructure) {
+        this.flatStructure = flatStructure;
+    }
+
+    private String calculateFlatStructure() {
+        return app.getFlatStructure() + "/" + getName();
     }
 }

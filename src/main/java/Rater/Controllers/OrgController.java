@@ -4,10 +4,18 @@ import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Models.Org;
 import Rater.Models.OrgCreateRequest;
+import Rater.Models.User;
+import Rater.Security.SecurityService;
+import Rater.Security.UserDetailsServiceImpl;
 import Rater.Services.OrgService;
+import Rater.Services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +30,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 @RequestMapping("/orgs")
 public class OrgController {
     private final OrgService orgService;
+    private final SecurityService securityService;
 
     @Autowired
-    public OrgController(OrgService orgService) {
+    public OrgController(OrgService orgService, SecurityService securityService) {
         this.orgService = orgService;
+        this.securityService = securityService;
     }
 
     @RequestMapping(value = "", method = POST)
@@ -33,9 +43,10 @@ public class OrgController {
         return ResponseEntity.ok(orgService.createOrg(orgCreateRequest));
     }
 
-    @RequestMapping(value = "/{orgName}", method = GET)
-    public ResponseEntity<Optional<Org>> getOrg(@PathVariable String orgName) {
-        return ResponseEntity.ok(orgService.getOrg(orgName));
+    @PreAuthorize("@securityService.hasOrg(#org)")
+    @RequestMapping(value = "/{org}", method = GET)
+    public ResponseEntity<Optional<Org>> getOrg(@PathVariable String org) {
+        return ResponseEntity.ok(orgService.getOrg(org));
     }
 
     @CrossOrigin
@@ -48,9 +59,11 @@ public class OrgController {
     }
 
     @RequestMapping(value = "", method = DELETE)
-    public ResponseEntity<?> deleteOrg() {
+    public ResponseEntity<?> deleteOrg() throws InternalServerException {
         // Get orgId/Name from JWT
         // orgService.deleteOrg(orgId);
-        return ResponseEntity.ok("");
+        Optional<User> user = securityService.getAuthedUser();
+
+        return ResponseEntity.ok("Delete: " + user.map(u -> u.getOrg().getName()).orElseThrow());
     }
 }
