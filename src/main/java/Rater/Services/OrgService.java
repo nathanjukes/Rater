@@ -2,11 +2,10 @@ package Rater.Services;
 
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
-import Rater.Models.Org;
-import Rater.Models.OrgCreateRequest;
+import Rater.Models.Org.Org;
+import Rater.Models.Org.OrgCreateRequest;
 import Rater.Repositories.OrgRepository;
-import com.sun.jdi.InternalException;
-import jdk.jshell.spi.ExecutionControl;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class OrgService {
     private OrgRepository orgRepository;
 

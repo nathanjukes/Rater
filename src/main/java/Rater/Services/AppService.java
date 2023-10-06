@@ -1,9 +1,10 @@
 package Rater.Services;
 
-import Rater.Models.App;
-import Rater.Models.Org;
+import Rater.Models.App.App;
+import Rater.Models.App.AppCreateRequest;
+import Rater.Models.Org.Org;
 import Rater.Repositories.AppRepository;
-import Rater.Repositories.OrgRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 import static Rater.Util.FlatStructure.getFlatStructure;
 
 @Service
+@Transactional
 public class AppService {
     private final AppRepository appRepository;
     private final OrgService orgService;
@@ -24,10 +26,9 @@ public class AppService {
         this.orgService = orgService;
     }
 
-    public void createApp(String name, UUID orgId) {
-        Optional<Org> org = orgService.getOrg(orgId);
-        App app = new App(name, org.orElseThrow());
-        appRepository.save(app);
+    public Optional<App> createApp(AppCreateRequest appCreateRequest, Org org) {
+        App app = App.from(appCreateRequest, org);
+        return Optional.ofNullable(appRepository.save(app));
     }
 
     public Optional<List<App>> getApps() {
@@ -45,5 +46,10 @@ public class AppService {
 
     public void deleteApp(UUID id) {
         appRepository.deleteById(id);
+    }
+
+    public void deleteApp(String name, Org org) {
+        final String flatStructure = getFlatStructure(List.of(org.getName(), name));
+        appRepository.deleteByFlatStructure(flatStructure);
     }
 }

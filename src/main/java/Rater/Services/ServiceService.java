@@ -1,7 +1,8 @@
 package Rater.Services;
 
-import Rater.Models.App;
+import Rater.Models.App.App;
 import Rater.Repositories.ServiceRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class ServiceService {
     private final ServiceRepository serviceRepository;
     private final AppService appService;
@@ -22,15 +24,15 @@ public class ServiceService {
 
     public void createService(String name, UUID appId) {
         Optional<App> app = appService.getApp(appId);
-        Rater.Models.Service service = new Rater.Models.Service(name, app.orElseThrow());
+        Rater.Models.Service.Service service = new Rater.Models.Service.Service(name, app.orElseThrow());
         serviceRepository.save(service);
     }
 
-    public Optional<List<Rater.Models.Service>> getServices() {
+    public Optional<List<Rater.Models.Service.Service>> getServices() {
         return Optional.of(serviceRepository.findAll());
     }
 
-    public Optional<Rater.Models.Service> getService(UUID id) {
+    public Optional<Rater.Models.Service.Service> getService(UUID id) {
         return serviceRepository.findById(id);
     }
 

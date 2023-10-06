@@ -1,4 +1,4 @@
-package Rater.Models;
+package Rater.Models.API;
 
 import java.util.UUID;
 

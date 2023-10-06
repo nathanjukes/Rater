@@ -1,4 +1,4 @@
-package Rater.Models;
+package Rater.Models.User;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.Email;

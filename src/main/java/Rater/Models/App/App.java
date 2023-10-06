@@ -1,5 +1,7 @@
-package Rater.Models;
+package Rater.Models.App;
 
+import Rater.Models.Org.Org;
+import Rater.Models.Service.Service;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -83,5 +85,9 @@ public class App {
 
     private String calculateFlatStructure() {
         return org.getName() + "/" + getName();
+    }
+
+    public static App from(AppCreateRequest appCreateRequest, Org org) {
+        return new App(appCreateRequest.getName(), org);
     }
 }

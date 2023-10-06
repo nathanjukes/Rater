@@ -1,6 +1,6 @@
 package Rater.Repositories;
 
-import Rater.Models.User;
+import Rater.Models.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

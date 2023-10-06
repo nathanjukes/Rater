@@ -1,9 +1,10 @@
 package Rater.Services;
 
-import Rater.Models.Org;
-import Rater.Models.User;
-import Rater.Models.UserCreateRequest;
+import Rater.Models.Org.Org;
+import Rater.Models.User.User;
+import Rater.Models.User.UserCreateRequest;
 import Rater.Repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class UserService {
     private UserRepository userRepository;
 

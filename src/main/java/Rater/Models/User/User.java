@@ -1,5 +1,6 @@
-package Rater.Models;
+package Rater.Models.User;
 
+import Rater.Models.Org.Org;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

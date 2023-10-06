@@ -1,10 +1,9 @@
 package Rater.Security;
 
 import Rater.Exceptions.InternalServerException;
-import Rater.Models.User;
+import Rater.Models.User.User;
 import Rater.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

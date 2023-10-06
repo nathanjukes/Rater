@@ -1,5 +1,7 @@
-package Rater.Models;
+package Rater.Models.Org;
 
+import Rater.Models.App.App;
+import Rater.Models.User.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

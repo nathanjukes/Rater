@@ -1,39 +1,39 @@
-package Rater.Models;
+package Rater.Models.API;
 
+import Rater.Models.Service.Service;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.persistence.*;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "services", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "app_id"}))
-public class Service {
+@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"name", "service_id"}))
+public class API {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     private String name;
 
-    private String flatStructure;
+    private int apiLimit;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
-    private Set<API> apis;
+    private String flatStructure;
 
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name="app_id")
-    private App app;
+    @JoinColumn(name="service_id")
+    private Service service;
 
-    public Service(String name, App app) {
+    @JsonCreator
+    public API(String name, int apiLimit, Service service) {
         this.name = name;
-        this.app = app;
+        this.apiLimit = apiLimit;
+        this.service = service;
         this.flatStructure = calculateFlatStructure();
     }
 
-    public Service() {
+    public API() {
 
     }
 
@@ -53,28 +53,32 @@ public class Service {
         this.name = name;
     }
 
-    public Set<API> getApis() {
-        return apis;
+    public int getApiLimit() {
+        return apiLimit;
     }
 
-    public void setApis(Set<API> apis) {
-        this.apis = apis;
+    public void setApiLimit(int apiLimit) {
+        this.apiLimit = apiLimit;
     }
 
-    public App getApp() {
-        return app;
+    public Service getService() {
+        return service;
     }
 
-    public void setApp(App app) {
-        this.app = app;
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public UUID getServiceId() {
+        return service.getId();
     }
 
     public UUID getAppId() {
-        return app.getId();
+        return service.getAppId();
     }
 
     public UUID getOrgId() {
-        return app.getOrgId();
+        return service.getOrgId();
     }
 
     public String getFlatStructure() {
@@ -86,6 +90,6 @@ public class Service {
     }
 
     private String calculateFlatStructure() {
-        return app.getFlatStructure() + "/" + getName();
+        return service.getFlatStructure() + "/" + getName();
     }
 }

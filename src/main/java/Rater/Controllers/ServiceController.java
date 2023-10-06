@@ -2,11 +2,12 @@ package Rater.Controllers;
 
 import Rater.Exceptions.InternalServerException;
 import Rater.Models.App.App;
-import Rater.Models.App.AppCreateRequest;
 import Rater.Models.Org.Org;
+import Rater.Models.Service.Service;
+import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Models.User.User;
 import Rater.Security.SecurityService;
-import Rater.Services.AppService;
+import Rater.Services.ServiceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,23 +19,24 @@ import java.util.UUID;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-@RequestMapping("/apps")
-public class AppController {
-    private final AppService appService;
+@RequestMapping("/services")
+public class ServiceController {
+    private final ServiceService serviceService;
     private final SecurityService securityService;
 
     @Autowired
-    public AppController(AppService appService, SecurityService securityService) {
-        this.appService = appService;
+    public ServiceController(ServiceService serviceService, SecurityService securityService) {
+        this.serviceService = serviceService;
         this.securityService = securityService;
     }
 
+
     @RequestMapping(value = "", method = POST)
-    public ResponseEntity<Optional<App>> createApp(@RequestBody @Valid AppCreateRequest appCreateRequest) throws InternalServerException {
+    public ResponseEntity<Optional<Service>> createApp(@RequestBody @Valid ServiceCreateRequest serviceCreateRequest) throws InternalServerException {
         Optional<User> user = securityService.getAuthedUser();
         Org org = user.map(u -> u.getOrg()).orElseThrow();
 
-        return ResponseEntity.ok(appService.createApp(appCreateRequest, org));
+        return ResponseEntity.ok(serviceService.createService(serviceCreateRequest, org));
     }
 
     @RequestMapping(value = "/{app}", method = GET)

@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements org.springframework.security.core
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Rater.Models.User> user = userService.getUserByEmail(email);
+        Optional<Rater.Models.User.User> user = userService.getUserByEmail(email);
         return User
                 .builder()
                 .username(user.map(u -> u.getEmail()).orElseThrow())

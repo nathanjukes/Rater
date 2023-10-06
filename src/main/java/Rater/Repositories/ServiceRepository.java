@@ -1,7 +1,6 @@
 package Rater.Repositories;
 
-import Rater.Models.Org;
-import Rater.Models.Service;
+import Rater.Models.Service.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
