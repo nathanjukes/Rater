@@ -1,5 +1,6 @@
 package Rater.Models.App;
 
+import Rater.Models.BuildComponent;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "apps", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "org_id"}))
-public class App {
+public class App implements BuildComponent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;

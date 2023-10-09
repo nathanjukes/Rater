@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.UUID;
 
+import static Rater.Security.SecurityService.throwIfNoAuth;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
@@ -54,6 +55,7 @@ public class OrgController {
     @RequestMapping(value = "", method = DELETE)
     public ResponseEntity<?> deleteOrg() throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
         orgService.deleteOrg(org.map(Org::getId).orElseThrow(UnauthorizedException::new));
 
         return ResponseEntity.ok("Deleted: " + org.map(u -> u.getName()).orElseThrow(UnauthorizedException::new));

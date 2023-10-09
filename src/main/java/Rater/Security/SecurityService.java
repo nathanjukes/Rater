@@ -1,6 +1,9 @@
 package Rater.Security;
 
 import Rater.Exceptions.InternalServerException;
+import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.App.App;
+import Rater.Models.BuildComponent;
 import Rater.Models.Org.Org;
 import Rater.Models.User.User;
 import Rater.Services.UserService;
@@ -10,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SecurityService {
@@ -28,6 +32,18 @@ public class SecurityService {
                 .isPresent();
     }
 
+    public boolean hasOrg(UUID orgId) throws InternalServerException {
+        Optional<Org> org = getAuthedOrg();
+
+        return org.map(o -> o.getId())
+                .filter(o -> o.equals(orgId))
+                .isPresent();
+    }
+
+    public boolean hasOrg(Optional<BuildComponent> obj) throws InternalServerException {
+        return obj.isEmpty() ? true : hasOrg(obj.get().getOrgId());
+    }
+
     private Optional<User> getAuthedUser() throws InternalServerException {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder
@@ -43,5 +59,11 @@ public class SecurityService {
 
     public Optional<Org> getAuthedOrg() throws InternalServerException {
         return Optional.of(getAuthedUser().map(u -> u.getOrg()).orElseThrow());
+    }
+
+    public static void throwIfNoAuth(Optional<Org> org) throws UnauthorizedException {
+        if (org.isEmpty()) {
+            throw new UnauthorizedException();
+        }
     }
 }

@@ -31,25 +31,19 @@ public class AppService {
         return Optional.ofNullable(appRepository.save(app));
     }
 
-    public Optional<List<App>> getApps() {
-        return Optional.of(appRepository.findAll());
+    public Optional<List<App>> getApps(UUID orgId) {
+        return appRepository.findByOrgId(orgId);
     }
 
     public Optional<App> getApp(UUID id) {
         return appRepository.findById(id);
     }
 
-    public Optional<App> getApp(Org org, String name) {
-        final String flatStructure = getFlatStructure(List.of(org.getName(), name));
-        return appRepository.findByFlatStructure(flatStructure);
-    }
-
     public void deleteApp(UUID id) {
         appRepository.deleteById(id);
     }
 
-    public void deleteApp(String name, Org org) {
-        final String flatStructure = getFlatStructure(List.of(org.getName(), name));
-        appRepository.deleteByFlatStructure(flatStructure);
+    public void deleteApp(UUID appId, Org org) {
+        appRepository.deleteByIdAndOrgId(appId, org.getId());
     }
 }

@@ -1,5 +1,6 @@
 package Rater.Models.API;
 
+import Rater.Models.BuildComponent;
 import Rater.Models.Service.Service;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"name", "service_id"}))
-public class API {
+public class API implements BuildComponent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;

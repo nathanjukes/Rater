@@ -66,11 +66,6 @@ public class SetupController {
         return ResponseEntity.ok(orgService.getOrgs());
     }
 
-    @RequestMapping(value = "/app", method = GET)
-    public ResponseEntity<Optional<List<App>>> getApps() {
-        return ResponseEntity.ok(appService.getApps());
-    }
-
     @RequestMapping(value = "/service", method = GET)
     public ResponseEntity<Optional<List<Service>>> getServices() {
         return ResponseEntity.ok(serviceService.getServices());
