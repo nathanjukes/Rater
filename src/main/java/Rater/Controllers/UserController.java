@@ -1,6 +1,6 @@
 package Rater.Controllers;
 
-import Rater.Models.User;
+import Rater.Models.User.User;
 import Rater.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

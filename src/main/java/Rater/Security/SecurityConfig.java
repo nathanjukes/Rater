@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                             .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                             .anyRequest().authenticated()
-                        // .anyRequest().permitAll()
+                            //.anyRequest().permitAll()
                 );
 
         http.authenticationProvider(authenticationProvider());

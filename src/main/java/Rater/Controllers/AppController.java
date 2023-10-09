@@ -31,18 +31,16 @@ public class AppController {
 
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<Optional<App>> createApp(@RequestBody @Valid AppCreateRequest appCreateRequest) throws InternalServerException {
-        Optional<User> user = securityService.getAuthedUser();
-        Org org = user.map(u -> u.getOrg()).orElseThrow();
+        Optional<Org> org = securityService.getAuthedOrg();
 
-        return ResponseEntity.ok(appService.createApp(appCreateRequest, org));
+        return ResponseEntity.ok(appService.createApp(appCreateRequest, org.orElseThrow()));
     }
 
     @RequestMapping(value = "/{app}", method = GET)
     public ResponseEntity<?> getApp(@PathVariable String app) throws InternalServerException {
-        Optional<User> user = securityService.getAuthedUser();
-        Org org = user.map(u -> u.getOrg()).orElseThrow();
+        Optional<Org> org = securityService.getAuthedOrg();
 
-        Optional<App> appOpt = appService.getApp(org, app);
+        Optional<App> appOpt = appService.getApp(org.orElseThrow(), app);
         return appOpt.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -58,10 +56,9 @@ public class AppController {
     public ResponseEntity<?> deleteApp(@PathVariable String app) throws InternalServerException {
         // Get orgId/Name from JWT
         // orgService.deleteOrg(orgId);
-        Optional<User> user = securityService.getAuthedUser();
-        Org org = user.map(u -> u.getOrg()).orElseThrow();
-        appService.deleteApp(app, org);
+        Optional<Org> org = securityService.getAuthedOrg();
+        appService.deleteApp(app, org.orElseThrow());
 
-        return ResponseEntity.ok("Deleted: " + user.map(u -> u.getOrg().getName()).orElseThrow() + "/" + app);
+        return ResponseEntity.ok("Deleted: " + org.map(o -> o.getName()).orElseThrow() + "/" + app);
     }
 }

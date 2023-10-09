@@ -1,9 +1,9 @@
 package Rater.Controllers;
 
-import Rater.Models.Org;
-import Rater.Models.User;
-import Rater.Models.UserCreateRequest;
-import Rater.Models.UserLoginRequest;
+import Rater.Models.Org.Org;
+import Rater.Models.User.User;
+import Rater.Models.User.UserCreateRequest;
+import Rater.Models.User.UserLoginRequest;
 import Rater.Security.JwtUtil;
 import Rater.Services.OrgService;
 import Rater.Services.UserService;

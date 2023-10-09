@@ -2,29 +2,22 @@ package Rater.Controllers;
 
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
-import Rater.Models.Org;
-import Rater.Models.OrgCreateRequest;
-import Rater.Models.User;
+import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.Org.Org;
+import Rater.Models.Org.OrgCreateRequest;
 import Rater.Security.SecurityService;
-import Rater.Security.UserDetailsServiceImpl;
 import Rater.Services.OrgService;
-import Rater.Services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping("/orgs")
@@ -59,11 +52,10 @@ public class OrgController {
     }
 
     @RequestMapping(value = "", method = DELETE)
-    public ResponseEntity<?> deleteOrg() throws InternalServerException {
-        // Get orgId/Name from JWT
-        // orgService.deleteOrg(orgId);
-        Optional<User> user = securityService.getAuthedUser();
+    public ResponseEntity<?> deleteOrg() throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        orgService.deleteOrg(org.map(Org::getId).orElseThrow(UnauthorizedException::new));
 
-        return ResponseEntity.ok("Delete: " + user.map(u -> u.getOrg().getName()).orElseThrow());
+        return ResponseEntity.ok("Deleted: " + org.map(u -> u.getName()).orElseThrow(UnauthorizedException::new));
     }
 }

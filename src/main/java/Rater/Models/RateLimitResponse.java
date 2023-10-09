@@ -1,5 +1,8 @@
 package Rater.Models;
 
+import Rater.Models.API.API;
+import Rater.Models.API.APIStatus;
+
 import java.time.LocalDateTime;
 
 public class RateLimitResponse {

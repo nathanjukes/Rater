@@ -18,4 +18,10 @@ public class GlobalControllerExceptionHandler {
     public void handleInternalServerException() {
 
     }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedException.class)
+    public void handleUnauthorizedException() {
+
+    }
 }

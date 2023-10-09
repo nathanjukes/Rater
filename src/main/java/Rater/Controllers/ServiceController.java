@@ -1,8 +1,10 @@
 package Rater.Controllers;
 
+import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
+import Rater.Models.Org.OrgCreateRequest;
 import Rater.Models.Service.Service;
 import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Models.User.User;
@@ -30,40 +32,34 @@ public class ServiceController {
         this.securityService = securityService;
     }
 
-
     @RequestMapping(value = "", method = POST)
-    public ResponseEntity<Optional<Service>> createApp(@RequestBody @Valid ServiceCreateRequest serviceCreateRequest) throws InternalServerException {
-        Optional<User> user = securityService.getAuthedUser();
-        Org org = user.map(u -> u.getOrg()).orElseThrow();
-
-        return ResponseEntity.ok(serviceService.createService(serviceCreateRequest, org));
+    public ResponseEntity<Optional<Service>> createService(@RequestBody @Valid ServiceCreateRequest serviceCreateRequest) throws DataConflictException, InternalServerException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        // Needs auth to verify app belongs to org in auth
+        return ResponseEntity.ok(serviceService.createService(serviceCreateRequest, org.orElseThrow()));
     }
 
-    @RequestMapping(value = "/{app}", method = GET)
-    public ResponseEntity<?> getApp(@PathVariable String app) throws InternalServerException {
-        Optional<User> user = securityService.getAuthedUser();
-        Org org = user.map(u -> u.getOrg()).orElseThrow();
-
-        Optional<App> appOpt = appService.getApp(org, app);
-        return appOpt.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    @RequestMapping(value = "/{serviceId}", method = GET)
+    public ResponseEntity<?> getService(@PathVariable UUID serviceId) throws InternalServerException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        // Auth here
+        Optional<Service> serviceOpt = serviceService.getService(serviceId);
+        return serviceOpt.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @RequestMapping(value = "", method = GET)
-    public ResponseEntity<?> getApps(@RequestParam(required = false) UUID appId) {
-        if (appId != null) {
-            return ResponseEntity.ok(appService.getApp(appId));
+    public ResponseEntity<?> getServices(@RequestParam(required = false) UUID serviceId) {
+        if (serviceId != null) {
+            return ResponseEntity.ok(serviceService.getService(serviceId));
         }
-        return ResponseEntity.ok(appService.getApps());
+        return ResponseEntity.ok(serviceService.getServices());
     }
 
-    @RequestMapping(value = "/{app}", method = DELETE)
-    public ResponseEntity<?> deleteApp(@PathVariable String app) throws InternalServerException {
-        // Get orgId/Name from JWT
-        // orgService.deleteOrg(orgId);
-        Optional<User> user = securityService.getAuthedUser();
-        Org org = user.map(u -> u.getOrg()).orElseThrow();
-        appService.deleteApp(app, org);
+    @RequestMapping(value = "/{service}", method = DELETE)
+    public ResponseEntity<?> deleteService(@PathVariable UUID service) throws InternalServerException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        //serviceService.deleteService(app, org);
 
-        return ResponseEntity.ok("Deleted: " + user.map(u -> u.getOrg().getName()).orElseThrow() + "/" + app);
+        return ResponseEntity.ok("Deleted: " + org.map(o -> o.getName()).orElseThrow() + "/" + service);
     }
 }

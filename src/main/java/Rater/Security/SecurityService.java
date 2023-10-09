@@ -1,6 +1,7 @@
 package Rater.Security;
 
 import Rater.Exceptions.InternalServerException;
+import Rater.Models.Org.Org;
 import Rater.Models.User.User;
 import Rater.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class SecurityService {
                 .isPresent();
     }
 
-    public Optional<User> getAuthedUser() throws InternalServerException {
+    private Optional<User> getAuthedUser() throws InternalServerException {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder
                     .getContext()
@@ -38,5 +39,9 @@ public class SecurityService {
             // Only expecting 500s here
             throw new InternalServerException();
         }
+    }
+
+    public Optional<Org> getAuthedOrg() throws InternalServerException {
+        return Optional.of(getAuthedUser().map(u -> u.getOrg()).orElseThrow());
     }
 }

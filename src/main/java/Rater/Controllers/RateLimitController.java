@@ -1,23 +1,20 @@
 package Rater.Controllers;
 
-import Rater.Models.API;
-import Rater.Models.APIStatus;
+import Rater.Models.API.API;
+import Rater.Models.API.APIStatus;
 import Rater.Models.RateLimitResponse;
 import Rater.Services.APIService;
-import Rater.Util.FlatStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static Rater.Util.FlatStructure.getFlatStructure;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 // Needs to  be able to:
 // Check if an endpoint is over the rate limit

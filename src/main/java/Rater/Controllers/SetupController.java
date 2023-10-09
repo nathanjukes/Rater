@@ -1,9 +1,9 @@
 package Rater.Controllers;
 
-import Rater.Models.API;
-import Rater.Models.App;
-import Rater.Models.Org;
-import Rater.Models.Service;
+import Rater.Models.API.API;
+import Rater.Models.App.App;
+import Rater.Models.Org.Org;
+import Rater.Models.Service.Service;
 import Rater.Services.APIService;
 import Rater.Services.AppService;
 import Rater.Services.OrgService;
@@ -35,20 +35,6 @@ public class SetupController {
         this.appService = appService;
         this.serviceService = serviceService;
         this.apiService = apiService;
-    }
-
-    @RequestMapping(value = "/service/{appId}/{name}", method = POST)
-    public ResponseEntity<String> setupService(@PathVariable UUID appId,
-                                               @PathVariable String name) {
-        serviceService.createService(name, appId);
-        return ResponseEntity.ok(name);
-    }
-
-    @RequestMapping(value = "/api/{serviceId}/{name}", method = POST)
-    public ResponseEntity<String> setupAPI(@PathVariable UUID serviceId,
-                                               @PathVariable String name) {
-        apiService.createAPI(name, serviceId);
-        return ResponseEntity.ok(name);
     }
 
     @RequestMapping(value = "/org/{orgId}", method = DELETE)

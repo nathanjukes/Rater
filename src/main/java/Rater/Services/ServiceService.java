@@ -1,6 +1,8 @@
 package Rater.Services;
 
 import Rater.Models.App.App;
+import Rater.Models.Org.Org;
+import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Repositories.ServiceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +24,10 @@ public class ServiceService {
         this.appService = appService;
     }
 
-    public void createService(String name, UUID appId) {
-        Optional<App> app = appService.getApp(appId);
-        Rater.Models.Service.Service service = new Rater.Models.Service.Service(name, app.orElseThrow());
-        serviceRepository.save(service);
+    public Optional<Rater.Models.Service.Service> createService(ServiceCreateRequest serviceCreateRequest, Org org) {
+        Optional<App> app = appService.getApp(serviceCreateRequest.getAppId());
+        Rater.Models.Service.Service service = new Rater.Models.Service.Service(serviceCreateRequest.getName(), app.orElseThrow());
+        return Optional.ofNullable(serviceRepository.save(service));
     }
 
     public Optional<List<Rater.Models.Service.Service>> getServices() {

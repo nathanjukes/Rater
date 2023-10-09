@@ -1,27 +1,26 @@
-package Rater.Models.Service;
+package Rater.Models.API;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public class ServiceCreateRequest {
+public class APICreateRequest {
     @NotBlank
     private String name;
-    private UUID appId;
+    private UUID serviceId;
 
     @JsonCreator
-    public ServiceCreateRequest(String name, UUID appId) {
+    public APICreateRequest(String name, UUID serviceId) {
         this.name = name;
-        this.appId = appId;
+        this.serviceId = serviceId;
     }
 
     public String getName() {
         return name;
     }
 
-    public UUID getAppId() {
-        return appId;
+    public UUID getServiceId() {
+        return serviceId;
     }
 }

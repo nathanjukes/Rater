@@ -1,7 +1,9 @@
 package Rater.Services;
 
 import Rater.Models.API.API;
+import Rater.Models.API.APICreateRequest;
 import Rater.Models.API.APIStatus;
+import Rater.Models.Org.Org;
 import Rater.Repositories.APIRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +37,9 @@ public class APIService {
         return Optional.of(apiRepository.findAll());
     }
 
-    public Optional<API> createAPI(String apiName, UUID serviceId) {
-        Optional<Rater.Models.Service.Service> service = serviceService.getService(serviceId);
-        API api = new API(apiName, 10, service.orElseThrow());
+    public Optional<API> createAPI(APICreateRequest apiCreateRequest, Org org) {
+        Optional<Rater.Models.Service.Service> service = serviceService.getService(apiCreateRequest.getServiceId());
+        API api = new API(apiCreateRequest.getName(), 10, service.orElseThrow());
         return Optional.of(apiRepository.save(api));
     }
 
