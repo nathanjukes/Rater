@@ -13,8 +13,6 @@ import java.util.UUID;
 
 @Repository
 public interface AppRepository extends JpaRepository<App, UUID> {
-    Optional<App> findByFlatStructure(String flatStructure);
-    Optional<App> deleteByFlatStructure(String flatStructure);
     @Query(value = "SELECT * FROM apps WHERE org_id = ?1", nativeQuery = true)
     Optional<List<App>> findByOrgId(UUID orgId);
 

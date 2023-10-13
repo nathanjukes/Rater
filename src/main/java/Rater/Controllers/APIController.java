@@ -2,6 +2,7 @@ package Rater.Controllers;
 
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
+import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.API;
 import Rater.Models.API.APICreateRequest;
 import Rater.Models.Org.Org;
@@ -32,14 +33,14 @@ public class APIController {
     }
 
     @RequestMapping(value = "", method = POST)
-    public ResponseEntity<Optional<API>> createAPI(@RequestBody @Valid APICreateRequest apiCreateRequest) throws DataConflictException, InternalServerException {
+    public ResponseEntity<Optional<API>> createAPI(@RequestBody @Valid APICreateRequest apiCreateRequest) throws DataConflictException, InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         // Needs auth to verify app belongs to org in auth
         return ResponseEntity.ok(apiService.createAPI(apiCreateRequest, org.orElseThrow()));
     }
 
     @RequestMapping(value = "/{apiId}", method = GET)
-    public ResponseEntity<?> getAPI(@PathVariable UUID apiId) throws InternalServerException {
+    public ResponseEntity<?> getAPI(@PathVariable UUID apiId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         // Auth here
         Optional<API> apiOpt = apiService.getAPI(apiId);
@@ -55,7 +56,7 @@ public class APIController {
     }
 
     @RequestMapping(value = "/{api}", method = DELETE)
-    public ResponseEntity<?> deleteAPI(@PathVariable UUID api) throws InternalServerException {
+    public ResponseEntity<?> deleteAPI(@PathVariable UUID api) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         //serviceService.deleteService(app, org);
 

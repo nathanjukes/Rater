@@ -2,6 +2,8 @@ package Rater.Models.Service;
 
 import Rater.Models.API.API;
 import Rater.Models.App.App;
+import Rater.Models.BuildComponent;
+import Rater.Models.Org.Org;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -11,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "services", uniqueConstraints=@UniqueConstraint(columnNames = {"name", "app_id"}))
-public class Service {
+public class Service implements BuildComponent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -29,10 +31,13 @@ public class Service {
     @JoinColumn(name="app_id")
     private App app;
 
-    public Service(String name, App app) {
+    private UUID orgId;
+
+    public Service(String name, App app, Org org) {
         this.name = name;
         this.app = app;
         this.flatStructure = calculateFlatStructure();
+        this.orgId = org.getId();
     }
 
     public Service() {

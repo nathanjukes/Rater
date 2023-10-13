@@ -1,6 +1,6 @@
 package RaterTests.Services;
 
-import Rater.Models.Org;
+import Rater.Models.Org.Org;
 import Rater.Services.OrgService;
 import org.junit.Before;
 import org.junit.Test;

@@ -9,6 +9,7 @@ import java.util.UUID;
 public class ServiceCreateRequest {
     @NotBlank
     private String name;
+    @NotNull
     private UUID appId;
 
     @JsonCreator

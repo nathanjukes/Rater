@@ -24,7 +24,7 @@ public class SecurityService {
         this.userService = userService;
     }
 
-    public boolean hasOrg(String orgName) throws InternalServerException {
+    public boolean hasOrg(String orgName) throws InternalServerException, UnauthorizedException {
         Optional<User> user = getAuthedUser();
 
         return user.map(u -> u.getOrg().getName())
@@ -32,7 +32,7 @@ public class SecurityService {
                 .isPresent();
     }
 
-    public boolean hasOrg(UUID orgId) throws InternalServerException {
+    public boolean hasOrg(UUID orgId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = getAuthedOrg();
 
         return org.map(o -> o.getId())
@@ -40,24 +40,27 @@ public class SecurityService {
                 .isPresent();
     }
 
-    public boolean hasOrg(Optional<BuildComponent> obj) throws InternalServerException {
+    public boolean hasOrg(Optional<BuildComponent> obj) throws InternalServerException, UnauthorizedException {
         return obj.isEmpty() ? true : hasOrg(obj.get().getOrgId());
     }
 
-    private Optional<User> getAuthedUser() throws InternalServerException {
+    private Optional<User> getAuthedUser() throws InternalServerException, UnauthorizedException {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
                     .getPrincipal();
             return userService.getUserByEmail(userDetails.getUsername());
+        } catch (ClassCastException ex) {
+            // When token not provided or token expired
+            throw new UnauthorizedException();
         } catch (Exception ex) {
-            // Only expecting 500s here
+            // Only expecting true 500s here
             throw new InternalServerException();
         }
     }
 
-    public Optional<Org> getAuthedOrg() throws InternalServerException {
+    public Optional<Org> getAuthedOrg() throws InternalServerException, UnauthorizedException {
         return Optional.of(getAuthedUser().map(u -> u.getOrg()).orElseThrow());
     }
 

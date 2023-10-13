@@ -36,6 +36,9 @@ public class AppService {
     }
 
     public Optional<App> getApp(UUID id) {
+        if (id == null) {
+            return Optional.empty();
+        }
         return appRepository.findById(id);
     }
 
