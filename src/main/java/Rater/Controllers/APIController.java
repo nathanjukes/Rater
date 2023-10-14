@@ -13,11 +13,13 @@ import Rater.Services.APIService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static Rater.Security.SecurityService.throwIfNoAuth;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
@@ -35,31 +37,40 @@ public class APIController {
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<Optional<API>> createAPI(@RequestBody @Valid APICreateRequest apiCreateRequest) throws DataConflictException, InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
-        // Needs auth to verify app belongs to org in auth
+        throwIfNoAuth(org);
+
         return ResponseEntity.ok(apiService.createAPI(apiCreateRequest, org.orElseThrow()));
     }
 
+    @PostAuthorize("@securityService.hasOrg(returnObject.body)")
     @RequestMapping(value = "/{apiId}", method = GET)
-    public ResponseEntity<?> getAPI(@PathVariable UUID apiId) throws InternalServerException, UnauthorizedException {
-        Optional<Org> org = securityService.getAuthedOrg();
-        // Auth here
+    public ResponseEntity<Optional<API>> getAPI(@PathVariable UUID apiId) throws UnauthorizedException, InternalServerException {
         Optional<API> apiOpt = apiService.getAPI(apiId);
-        return apiOpt.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+
+        if (apiOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(apiOpt);
     }
 
     @RequestMapping(value = "", method = GET)
-    public ResponseEntity<?> getAPIs(@RequestParam(required = false) UUID apiId) {
-        if (apiId != null) {
-            return ResponseEntity.ok(apiService.getAPI(apiId));
-        }
-        return ResponseEntity.ok(apiService.getAPIs());
+    public ResponseEntity<?> getAPIs(@RequestParam(required = false) UUID appId,
+                                     @RequestParam(required = false) UUID serviceId) throws UnauthorizedException, InternalServerException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        return ResponseEntity.ok(apiService.getAPIs(org.map(Org::getId).get(), appId, serviceId));
     }
 
-    @RequestMapping(value = "/{api}", method = DELETE)
-    public ResponseEntity<?> deleteAPI(@PathVariable UUID api) throws InternalServerException, UnauthorizedException {
+    @RequestMapping(value = "/{apiId}", method = DELETE)
+    public ResponseEntity<?> deleteAPI(@PathVariable UUID apiId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
-        //serviceService.deleteService(app, org);
+        throwIfNoAuth(org);
 
-        return ResponseEntity.ok("Deleted: " + org.map(o -> o.getName()).orElseThrow() + "/" + api);
+        if (!apiService.getAPI(apiId).map(API::getOrgId).equals(org.map(Org::getId))) {
+            return ResponseEntity.notFound().build();
+        }
+        apiService.deleteAPI(apiId, org.get());
+        return ResponseEntity.ok("Deleted: " + org.map(o -> o.getName()).orElseThrow() + "/" + apiId);
     }
 }

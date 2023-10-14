@@ -44,7 +44,7 @@ public class RateLimitController {
 
         // 2. Get API required, in the future orgName will be redundant as we will get that from the token
         String flatStructure = getFlatStructure(List.of(orgName, appName, serviceName, apiName));
-        Optional<API> api = apiService.getAPI(flatStructure);
+        Optional<API> api = Optional.ofNullable(apiService.getAPIs().get().get(0));
         APIStatus apiStatus = apiService.getAPIStatus(api.orElseThrow());
 
         // 3. Craft RateLimitResponse

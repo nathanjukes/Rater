@@ -1,5 +1,6 @@
 package Rater.Services;
 
+import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.API;
 import Rater.Models.API.APICreateRequest;
 import Rater.Models.API.APIStatus;
@@ -29,22 +30,35 @@ public class APIService {
         return apiRepository.findById(id);
     }
 
-    public Optional<API> getAPI(String flatStructure) {
-        return apiRepository.findByFlatStructure(flatStructure);
-    }
-
     public Optional<List<API>> getAPIs() {
         return Optional.of(apiRepository.findAll());
     }
 
-    public Optional<API> createAPI(APICreateRequest apiCreateRequest, Org org) {
+    public Optional<List<API>> getAPIs(UUID orgId, UUID appId, UUID serviceId) {
+        if (appId != null && serviceId != null) {
+            return apiRepository.findAPIs(orgId, appId, serviceId);
+        } else if (appId == null && serviceId != null) {
+            return apiRepository.findAPIsByServiceId(orgId, serviceId);
+        } else if (appId != null && serviceId == null) {
+            return apiRepository.findAPIsByAppId(orgId, appId);
+        }
+
+        return apiRepository.findAPIs(orgId);
+    }
+
+    public Optional<API> createAPI(APICreateRequest apiCreateRequest, Org org) throws UnauthorizedException {
         Optional<Rater.Models.Service.Service> service = serviceService.getService(apiCreateRequest.getServiceId());
-        API api = new API(apiCreateRequest.getName(), 10, service.orElseThrow());
+
+        if (service.isEmpty() || !service.map(s -> s.getOrgId()).get().equals(org.getId())) {
+            throw new UnauthorizedException();
+        }
+
+        API api = new API(apiCreateRequest.getName(), 10, service.orElseThrow(), org);
         return Optional.of(apiRepository.save(api));
     }
 
-    public void deleteAPI(UUID id) {
-        apiRepository.deleteById(id);
+    public void deleteAPI(UUID id, Org org) {
+        apiRepository.deleteByIdAndOrgId(id, org.getId());
     }
 
     public APIStatus getAPIStatus(API api) {

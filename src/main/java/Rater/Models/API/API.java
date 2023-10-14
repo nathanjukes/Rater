@@ -1,6 +1,7 @@
 package Rater.Models.API;
 
 import Rater.Models.BuildComponent;
+import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -26,12 +27,17 @@ public class API implements BuildComponent {
     @JoinColumn(name="service_id")
     private Service service;
 
-    @JsonCreator
-    public API(String name, int apiLimit, Service service) {
+    private UUID orgId;
+
+    private UUID appId;
+
+    public API(String name, int apiLimit, Service service, Org org) {
         this.name = name;
         this.apiLimit = apiLimit;
         this.service = service;
         this.flatStructure = calculateFlatStructure();
+        this.orgId = org.getId();
+        this.appId = service.getAppId();
     }
 
     public API() {
@@ -75,11 +81,11 @@ public class API implements BuildComponent {
     }
 
     public UUID getAppId() {
-        return service.getAppId();
+        return appId;
     }
 
     public UUID getOrgId() {
-        return service.getOrgId();
+        return orgId;
     }
 
     public String getFlatStructure() {

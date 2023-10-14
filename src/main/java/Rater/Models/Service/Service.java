@@ -81,7 +81,7 @@ public class Service implements BuildComponent {
     }
 
     public UUID getOrgId() {
-        return app.getOrgId();
+        return orgId;
     }
 
     public String getFlatStructure() {
