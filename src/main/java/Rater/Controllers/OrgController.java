@@ -1,5 +1,6 @@
 package Rater.Controllers;
 
+import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
@@ -33,7 +34,7 @@ public class OrgController {
     }
 
     @RequestMapping(value = "", method = POST)
-    public ResponseEntity<Optional<Org>> createOrg(@RequestBody @Valid OrgCreateRequest orgCreateRequest) throws DataConflictException, InternalServerException {
+    public ResponseEntity<Optional<Org>> createOrg(@RequestBody @Valid OrgCreateRequest orgCreateRequest) throws DataConflictException, InternalServerException, BadRequestException {
         return ResponseEntity.ok(orgService.createOrg(orgCreateRequest));
     }
 

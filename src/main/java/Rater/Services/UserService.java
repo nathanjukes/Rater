@@ -1,6 +1,7 @@
 package Rater.Services;
 
 import Rater.Models.Org.Org;
+import Rater.Models.User.OrgUserCreateRequest;
 import Rater.Models.User.User;
 import Rater.Models.User.UserCreateRequest;
 import Rater.Repositories.UserRepository;
@@ -38,6 +39,12 @@ public class UserService {
     public Optional<User> createUser(UserCreateRequest userCreateRequest, Org org, PasswordEncoder passwordEncoder) {
         userCreateRequest.encode(passwordEncoder);
         User user = User.from(userCreateRequest, org);
+        return Optional.ofNullable(userRepository.save(user));
+    }
+
+    public Optional<User> createUser(OrgUserCreateRequest orgUserCreateRequest, Org org, PasswordEncoder passwordEncoder) {
+        orgUserCreateRequest.encode(passwordEncoder);
+        User user = User.from(orgUserCreateRequest, org);
         return Optional.ofNullable(userRepository.save(user));
     }
 }

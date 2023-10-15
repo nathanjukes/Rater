@@ -1,19 +1,28 @@
 package Rater.Controllers;
 
+import Rater.Exceptions.BadRequestException;
+import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Auth.RefreshToken;
 import Rater.Models.Auth.RefreshTokenRequest;
 import Rater.Models.Auth.TokenResponse;
 import Rater.Models.Org.Org;
+import Rater.Models.Org.OrgCreateRequest;
+import Rater.Models.User.OrgUserCreateRequest;
 import Rater.Models.User.User;
 import Rater.Models.User.UserCreateRequest;
 import Rater.Models.User.UserLoginRequest;
 import Rater.Security.JwtUtil;
 import Rater.Security.RefreshTokenService;
+import Rater.Security.SecurityService;
 import Rater.Services.OrgService;
 import Rater.Services.UserService;
 import jakarta.validation.Valid;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,10 +31,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import static Rater.Security.SecurityService.throwIfNoAuth;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -34,29 +46,63 @@ public class AuthenticationController {
     private final UserService userService;
     private final OrgService orgService;
     private final RefreshTokenService refreshTokenService;
+    private final SecurityService securityService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public AuthenticationController(UserService userService, OrgService orgService, RefreshTokenService refreshTokenService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    @Autowired
+    public AuthenticationController(UserService userService, OrgService orgService, RefreshTokenService refreshTokenService, SecurityService securityService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userService = userService;
         this.orgService = orgService;
         this.refreshTokenService = refreshTokenService;
+        this.securityService = securityService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
 
     @RequestMapping(value = "/register", method = POST)
-    public ResponseEntity<Optional<User>> userRegistration(@RequestBody @Valid UserCreateRequest userCreateRequest) {
-        // 1. Does Org Exist already?
-        // 2. Does user exist in org?
+    public ResponseEntity<Optional<User>> userRegistrationAndOrgCreation(@RequestBody @Valid UserCreateRequest userCreateRequest) throws BadRequestException, InternalServerException, DataConflictException {
+        Optional<Org> userOrg = orgService.createOrg(new OrgCreateRequest(userCreateRequest.getOrgName()));
 
-        Optional<Org> userOrg = orgService.getOrg(userCreateRequest.getOrgName());
+        if (userOrg.isEmpty()) {
+            throw new BadRequestException();
+        }
 
-        Optional<User> user = userService.createUser(userCreateRequest, userOrg.orElseThrow(), passwordEncoder);
+        try {
+            Optional<User> user = userService.createUser(userCreateRequest, userOrg.orElseThrow(), passwordEncoder);
+            return ResponseEntity.ok(user);
+        } catch (DataIntegrityViolationException ex) {
+            orgService.deleteOrg(userOrg.get().getId());
+            throw new BadRequestException();
+        } catch (Exception ex) {
+            orgService.deleteOrg(userOrg.get().getId());
+            throw new InternalServerException();
+        }
+    }
 
-        return ResponseEntity.ok(user);
+    @RequestMapping(value = "/registerOrgUser", method = POST)
+    public ResponseEntity<Optional<User>> userRegistrationWithOrgExisting(@RequestBody @Valid OrgUserCreateRequest orgUserCreateRequest) throws BadRequestException, InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+        if (!org.map(Org::getId).orElseThrow().equals(orgUserCreateRequest.getOrgId())) {
+            throw new UnauthorizedException();
+        }
+
+        Optional<Org> userOrg = orgService.getOrg(orgUserCreateRequest.getOrgId());
+        if (userOrg.isEmpty()) {
+            throw new BadRequestException();
+        }
+
+        try {
+            Optional<User> user = userService.createUser(orgUserCreateRequest, userOrg.orElseThrow(), passwordEncoder);
+            return ResponseEntity.ok(user);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestException();
+        } catch (Exception ex) {
+            throw new InternalServerException();
+        }
     }
 
     @RequestMapping(value = "/login", method = POST)

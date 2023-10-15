@@ -31,4 +31,10 @@ public class GlobalControllerExceptionHandler {
     public void handleAccessDenied() {
 
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public void handleBadRequest() {
+
+    }
 }

@@ -1,5 +1,6 @@
 package Rater.Services;
 
+import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Models.Org.Org;
@@ -8,6 +9,7 @@ import Rater.Repositories.OrgRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,13 +26,15 @@ public class OrgService {
         this.orgRepository = orgRepository;
     }
 
-    public Optional<Org> createOrg(OrgCreateRequest orgCreateRequest) throws DataConflictException, InternalServerException {
+    public Optional<Org> createOrg(OrgCreateRequest orgCreateRequest) throws InternalServerException, BadRequestException {
         Org org = Org.from(orgCreateRequest);
 
+        if (orgRepository.existsByName(org.getName())) {
+            throw new BadRequestException();
+        }
+
         try {
-            return Optional.ofNullable(orgRepository.save(org));
-        } catch (DataIntegrityViolationException ex) {
-            throw new DataConflictException("Org name in use");
+            return Optional.of(orgRepository.save(org));
         } catch (Exception ex) {
             throw new InternalServerException();
         }
