@@ -60,12 +60,14 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/login", method = POST)
-    public ResponseEntity<TokenResponse> userRegistration(@RequestBody @Valid UserLoginRequest userLoginRequest) throws InternalServerException, UnauthorizedException {
+    public ResponseEntity<TokenResponse> userLogin(@RequestBody @Valid UserLoginRequest userLoginRequest) throws InternalServerException, UnauthorizedException {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(auth);
         TokenResponse jwt = jwtUtil.generateTokenResponse(auth);
+
+        refreshTokenService.deleteRefreshToken();
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken();
         jwt.setRefreshToken(refreshToken.getToken().toString());
