@@ -1,10 +1,16 @@
 package Rater.Controllers;
 
+import Rater.Exceptions.InternalServerException;
+import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.Auth.RefreshToken;
+import Rater.Models.Auth.RefreshTokenRequest;
+import Rater.Models.Auth.TokenResponse;
 import Rater.Models.Org.Org;
 import Rater.Models.User.User;
 import Rater.Models.User.UserCreateRequest;
 import Rater.Models.User.UserLoginRequest;
 import Rater.Security.JwtUtil;
+import Rater.Security.RefreshTokenService;
 import Rater.Services.OrgService;
 import Rater.Services.UserService;
 import jakarta.validation.Valid;
@@ -27,36 +33,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class AuthenticationController {
     private final UserService userService;
     private final OrgService orgService;
+    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public AuthenticationController(UserService userService, OrgService orgService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthenticationController(UserService userService, OrgService orgService, RefreshTokenService refreshTokenService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userService = userService;
         this.orgService = orgService;
+        this.refreshTokenService = refreshTokenService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
-
-    /*   @RequestMapping(method = RequestMethod.POST, value = "/register")
-    public ResponseEntity<Map<String, UUID>> registerUser(@Valid @RequestBody User user) throws DataConflictException {
-        *//*if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
-        }*//*
-
-      *//*  if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
-        }*//*
-
-        user.encodePassword(encoder);
-        user = userService.addUser(user);
-        return ResponseEntity.ok(Collections.singletonMap("id", user.getId()));
-    }*/
 
     @RequestMapping(value = "/register", method = POST)
     public ResponseEntity<Optional<User>> userRegistration(@RequestBody @Valid UserCreateRequest userCreateRequest) {
@@ -71,13 +60,35 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/login", method = POST)
-    public ResponseEntity<String> userRegistration(@RequestBody @Valid UserLoginRequest userLoginRequest) {
+    public ResponseEntity<TokenResponse> userRegistration(@RequestBody @Valid UserLoginRequest userLoginRequest) throws InternalServerException, UnauthorizedException {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(auth);
-        String jwt = jwtUtil.generateJwtToken(auth);
+        TokenResponse jwt = jwtUtil.generateTokenResponse(auth);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken();
+        jwt.setRefreshToken(refreshToken.getToken().toString());
 
         return ResponseEntity.ok(jwt);
+    }
+
+    @RequestMapping(value = "/refreshToken", method = POST)
+    public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) throws UnauthorizedException {
+        Optional<RefreshToken> refreshToken = refreshTokenService.getRefreshToken(refreshTokenRequest.getRefreshToken());
+        if (!refreshTokenService.verifyToken(refreshToken)) {
+            throw new UnauthorizedException();
+        }
+
+        TokenResponse jwt = jwtUtil.generateTokenResponse(refreshToken.map(RefreshToken::getUser).orElseThrow().getEmail());
+        jwt.setRefreshToken(refreshTokenRequest.getRefreshToken().toString());
+
+        return ResponseEntity.ok(jwt);
+    }
+
+    @RequestMapping(value = "/logout", method = POST)
+    public ResponseEntity<?> logout() throws InternalServerException, UnauthorizedException {
+        refreshTokenService.deleteRefreshToken();
+        return ResponseEntity.ok().build();
     }
 }

@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                            .requestMatchers(HttpMethod.POST, "/auth/logout").authenticated()
                             .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                             //.anyRequest().authenticated()
                             .anyRequest().permitAll()

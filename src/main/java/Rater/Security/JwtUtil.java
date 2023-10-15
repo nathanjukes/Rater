@@ -1,5 +1,6 @@
 package Rater.Security;
 
+import Rater.Models.Auth.TokenResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -27,30 +28,39 @@ public class JwtUtil implements Serializable {
     private final String TOKEN_HEADER = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 
-    public String generateJwtToken(Authentication authentication) {
+    public TokenResponse generateTokenResponse(Authentication authentication) {
+        Date expiration = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
+        String jwt = generateJwtToken(authentication, expiration);
+
+        return new TokenResponse(jwt, expiration);
+    }
+
+    public TokenResponse generateTokenResponse(String username) {
+        Date expiration = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
+        String jwt = generateJwtToken(username, expiration);
+
+        return new TokenResponse(jwt, expiration);
+    }
+
+    private String generateJwtToken(Authentication authentication, Date expiration) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
         String username = userPrincipal.getUsername();
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("orgName", "orgTesting");
 
+        return generateJwtToken(username, expiration);
+    }
+
+    private String generateJwtToken(String username, Date expiration) {
         return Jwts
                 .builder()
-                .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(expiration)
                 .signWith(key(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
-    }
-
-    public Long extractOrgName(String token) {
-        // You can add a custom claim for organization ID when creating the token.
-        // For example, if you add it as "orgId" in the token claims.
-        return Long.parseLong((String) extractClaim(token, claims -> claims.get("orgName")));
     }
 
     public Date extractExpirationDate(String token) {
@@ -68,10 +78,6 @@ public class JwtUtil implements Serializable {
 
     private Boolean isTokenExpired(String token) {
         return extractExpirationDate(token).before(new Date());
-    }
-
-    public String getUsernameFromToken(String token) {
-        return getParser().parseClaimsJws(token).getBody().getSubject();
     }
 
     public String parseJwt(HttpServletRequest request) {

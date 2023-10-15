@@ -44,7 +44,7 @@ public class SecurityService {
         return obj.isEmpty() ? true : hasOrg(obj.get().getOrgId());
     }
 
-    private Optional<User> getAuthedUser() throws InternalServerException, UnauthorizedException {
+    public Optional<User> getAuthedUser() throws InternalServerException, UnauthorizedException {
         try {
             UserDetails userDetails = (UserDetails) SecurityContextHolder
                     .getContext()
