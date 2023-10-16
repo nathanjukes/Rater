@@ -108,8 +108,6 @@ public class OrgServiceTest {
 
     @Test
     public void testOrgDelete() {
-        Org org = new Org("testOrg");
-
         orgService.deleteOrg(UUID.randomUUID());
 
         verify(orgRepository, times(1)).deleteById(any());

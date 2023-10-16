@@ -86,8 +86,6 @@ public class AppServiceTest {
 
     @Test
     public void testAppDelete() {
-        App app = new App("testapp", testOrg);
-
         appService.deleteApp(UUID.randomUUID());
 
         verify(appRepository, times(1)).deleteById(any());
