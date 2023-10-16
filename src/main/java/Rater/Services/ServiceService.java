@@ -45,6 +45,10 @@ public class ServiceService {
     }
 
     public Optional<Rater.Models.Service.Service> getService(UUID id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+
         return serviceRepository.findById(id);
     }
 

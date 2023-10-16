@@ -53,6 +53,12 @@ public class AppServiceTest {
     }
 
     @Test
+    public void testGetAppNullId() {
+        Optional<App> app = appService.getApp(null);
+        assertEquals(Optional.empty(), app);
+    }
+
+    @Test
     public void testCreateApp() throws Exception {
         AppCreateRequest request = new AppCreateRequest("Testingapp");
         App app = App.from(request, testOrg);
