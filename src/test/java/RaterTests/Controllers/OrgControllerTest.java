@@ -43,6 +43,19 @@ public class OrgControllerTest {
     }
 
     @Test
+    public void testGetOrgsNoId() {
+        orgController.getOrgs(null);
+        verify(orgService).getOrgs();
+    }
+
+    @Test
+    public void testGetOrgsWithId() {
+        UUID id = UUID.randomUUID();
+        orgController.getOrgs(id);
+        verify(orgService).getOrg(id);
+    }
+
+    @Test
     public void testDeleteOrg() throws InternalServerException, UnauthorizedException {
         orgController.deleteOrg();
         verify(orgService).deleteOrg(any());
