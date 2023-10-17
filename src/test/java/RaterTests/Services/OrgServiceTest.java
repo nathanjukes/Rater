@@ -37,7 +37,9 @@ public class OrgServiceTest {
     @Before
     public void setup() {
         Org testOrg = new Org("testOrg");
+        testOrg.setId(UUID.fromString("713aa781-0c18-447c-9a5f-6e7f1a089d03"));
         when(orgRepository.findByName("testOrg")).thenReturn(Optional.of(testOrg));
+        when(orgRepository.findById(testOrg.getId())).thenReturn(Optional.of(testOrg));
         when(orgRepository.findAll()).thenReturn(List.of(testOrg));
     }
 
@@ -51,6 +53,13 @@ public class OrgServiceTest {
     public void testGetOrgByNameDoesNotExist() {
         Optional<Org> org = orgService.getOrg("test org test");
         assertEquals(null, org.map(Org::getName).orElse(null));
+    }
+
+    @Test
+    public void testGetOrgById() {
+        Optional<Org> org = orgService.getOrg(UUID.fromString("713aa781-0c18-447c-9a5f-6e7f1a089d03"));
+        assertEquals("testOrg", org.map(Org::getName).orElse(null));
+        assertEquals("713aa781-0c18-447c-9a5f-6e7f1a089d03", org.map(Org::getId).orElse(null).toString());
     }
 
     @Test
