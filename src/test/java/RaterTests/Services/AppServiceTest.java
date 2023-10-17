@@ -34,7 +34,9 @@ public class AppServiceTest {
     @Before
     public void setup() {
         testOrg = new Org("test");
+        testOrg.setId(UUID.randomUUID());
         App testApp = new App("testapp", testOrg);
+        testApp.setId(UUID.randomUUID());
         when(appRepository.findById(any())).thenReturn(Optional.of(testApp));
         when(appRepository.findByOrgId(any())).thenReturn(Optional.of(List.of(testApp)));
         when(appRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000000"))).thenReturn(Optional.empty());
@@ -59,7 +61,7 @@ public class AppServiceTest {
     }
 
     @Test
-    public void testCreateApp() throws Exception {
+    public void testCreateApp() {
         AppCreateRequest request = new AppCreateRequest("Testingapp");
         App app = App.from(request, testOrg);
 
@@ -98,7 +100,15 @@ public class AppServiceTest {
     }
 
     @Test
-    public void testAppGetAll() {
+    public void testAppDeleteWithOrgId() {
+        UUID appId = UUID.randomUUID();
+        appService.deleteApp(appId, testOrg);
+
+        verify(appRepository, times(1)).deleteByIdAndOrgId(eq(appId), eq(testOrg.getId()));
+    }
+
+    @Test
+    public void testGetAllApps() {
         List<App> appList = List.of(new App("testapp", testOrg));
 
         List<App> comparisonList = appService.getApps(UUID.randomUUID()).get();

@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static Rater.Util.FlatStructure.getFlatStructure;
-
 @Service
 @Transactional
 public class AppService {
