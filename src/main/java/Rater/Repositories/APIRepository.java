@@ -14,7 +14,7 @@ import java.util.UUID;
 @Repository
 public interface APIRepository extends JpaRepository<API, UUID> {
     @Query(value = "SELECT * FROM apis WHERE org_id = ?1 AND app_id = ?2 AND service_id =?3", nativeQuery = true)
-    Optional<List<API>> findAPIs(UUID orgId, UUID appId, UUID serviceId);
+    Optional<List<API>> findByOrgId(UUID orgId, UUID appId, UUID serviceId);
 
     @Query(value = "SELECT * FROM apis WHERE org_id = ?1 AND app_id = ?2", nativeQuery = true)
     Optional<List<API>> findAPIsByAppId(UUID orgId, UUID appId);
@@ -23,7 +23,7 @@ public interface APIRepository extends JpaRepository<API, UUID> {
     Optional<List<API>> findAPIsByServiceId(UUID orgId, UUID serviceId);
 
     @Query(value = "SELECT * FROM apis WHERE org_id = ?1", nativeQuery = true)
-    Optional<List<API>> findAPIs(UUID orgId);
+    Optional<List<API>> findByOrgId(UUID orgId);
 
     @Modifying
     @Transactional

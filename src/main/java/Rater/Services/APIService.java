@@ -27,6 +27,9 @@ public class APIService {
     }
 
     public Optional<API> getAPI(UUID id) {
+        if (id == null) {
+            return Optional.empty();
+        }
         return apiRepository.findById(id);
     }
 
@@ -36,14 +39,14 @@ public class APIService {
 
     public Optional<List<API>> getAPIs(UUID orgId, UUID appId, UUID serviceId) {
         if (appId != null && serviceId != null) {
-            return apiRepository.findAPIs(orgId, appId, serviceId);
+            return apiRepository.findByOrgId(orgId, appId, serviceId);
         } else if (appId == null && serviceId != null) {
             return apiRepository.findAPIsByServiceId(orgId, serviceId);
         } else if (appId != null && serviceId == null) {
             return apiRepository.findAPIsByAppId(orgId, appId);
         }
 
-        return apiRepository.findAPIs(orgId);
+        return apiRepository.findByOrgId(orgId);
     }
 
     public Optional<API> createAPI(APICreateRequest apiCreateRequest, Org org) throws UnauthorizedException {
