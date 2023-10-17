@@ -84,8 +84,6 @@ public class ServiceServiceTest {
         ServiceCreateRequest request = new ServiceCreateRequest("Testservice", UUID.randomUUID());
         Service service = new Service("Testservice", testApp, testOrg);
 
-        when(serviceRepository.save(any())).thenThrow(new RuntimeException("something bad"));
-
         try {
             serviceService.createService(request, testOrg);
             fail("Expected InternalServerException");
