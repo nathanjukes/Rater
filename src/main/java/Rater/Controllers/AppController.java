@@ -9,6 +9,8 @@ import Rater.Models.User.User;
 import Rater.Security.SecurityService;
 import Rater.Services.AppService;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -24,6 +26,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequestMapping("/apps")
 public class AppController {
+    private static final Logger log = LogManager.getLogger(AppController.class);
+
     private final AppService appService;
     private final SecurityService securityService;
 
@@ -38,6 +42,8 @@ public class AppController {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
+        log.info("Create App Request: " + appCreateRequest.toString());
+
         return ResponseEntity.ok(appService.createApp(appCreateRequest, org.get()));
     }
 
@@ -45,6 +51,8 @@ public class AppController {
     @RequestMapping(value = "/{appId}", method = GET)
     public ResponseEntity<Optional<App>> getApp(@PathVariable UUID appId) {
         Optional<App> appOpt = appService.getApp(appId);
+
+        log.info("Get App Request: " + appId);
 
         if (appOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -64,6 +72,8 @@ public class AppController {
     public ResponseEntity<?> deleteApp(@PathVariable UUID appId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
+
+        log.info("Delete App Request: " + appId);
 
         if (!appService.getApp(appId).map(App::getOrgId).equals(org.map(Org::getId))) {
            return ResponseEntity.notFound().build();

@@ -9,6 +9,8 @@ import Rater.Models.Org.OrgCreateRequest;
 import Rater.Security.SecurityService;
 import Rater.Services.OrgService;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequestMapping("/orgs")
 public class OrgController {
+    private static final Logger log = LogManager.getLogger(OrgController.class);
+
     private final OrgService orgService;
     private final SecurityService securityService;
 
@@ -35,6 +39,8 @@ public class OrgController {
 
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<Optional<Org>> createOrg(@RequestBody @Valid OrgCreateRequest orgCreateRequest) throws DataConflictException, InternalServerException, BadRequestException {
+        log.info("Create Org Request: " + orgCreateRequest);
+
         return ResponseEntity.ok(orgService.createOrg(orgCreateRequest));
     }
 
@@ -57,6 +63,9 @@ public class OrgController {
     public ResponseEntity<?> deleteOrg() throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
+
+        log.info("Delete Org Request: " + org.map(Org::getId).get());
+
         orgService.deleteOrg(org.map(Org::getId).orElseThrow(UnauthorizedException::new));
 
         return ResponseEntity.ok("Deleted: " + org.map(u -> u.getName()).orElseThrow(UnauthorizedException::new));

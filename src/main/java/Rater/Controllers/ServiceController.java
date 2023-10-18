@@ -12,6 +12,8 @@ import Rater.Models.User.User;
 import Rater.Security.SecurityService;
 import Rater.Services.ServiceService;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -26,6 +28,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequestMapping("/services")
 public class ServiceController {
+    private static final Logger log = LogManager.getLogger(ServiceController.class);
+
     private final ServiceService serviceService;
     private final SecurityService securityService;
 
@@ -39,6 +43,9 @@ public class ServiceController {
     public ResponseEntity<Optional<Service>> createService(@RequestBody @Valid ServiceCreateRequest serviceCreateRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
+
+        log.info("Service Create Request: " + serviceCreateRequest);
+
         return ResponseEntity.ok(serviceService.createService(serviceCreateRequest, org.orElseThrow()));
     }
 
@@ -46,6 +53,8 @@ public class ServiceController {
     @RequestMapping(value = "/{serviceId}", method = GET)
     public ResponseEntity<Optional<Service>> getService(@PathVariable UUID serviceId) {
         Optional<Service> serviceOpt = serviceService.getService(serviceId);
+
+        log.info("Get Service Request: " + serviceId);
 
         if (serviceOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -65,6 +74,8 @@ public class ServiceController {
     public ResponseEntity<?> deleteService(@PathVariable UUID serviceId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
+
+        log.info("Delete Service Request: " + serviceId);
 
         if (!serviceService.getService(serviceId).map(Service::getOrgId).equals(org.map(Org::getId))) {
             return ResponseEntity.notFound().build();

@@ -19,6 +19,8 @@ import Rater.Security.SecurityService;
 import Rater.Services.OrgService;
 import Rater.Services.UserService;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -43,6 +45,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @RequestMapping(value = "/auth")
 public class AuthenticationController {
+    private static final Logger log = LogManager.getLogger(AuthenticationController.class);
+
     private final UserService userService;
     private final OrgService orgService;
     private final RefreshTokenService refreshTokenService;
@@ -70,6 +74,8 @@ public class AuthenticationController {
             throw new BadRequestException();
         }
 
+        log.info("User Registration Request - OrgId: " + userOrg.map(Org::getId).get());
+
         try {
             Optional<User> user = userService.createUser(userCreateRequest, userOrg.orElseThrow(), passwordEncoder);
             return ResponseEntity.ok(user);
@@ -94,6 +100,8 @@ public class AuthenticationController {
         if (userOrg.isEmpty()) {
             throw new BadRequestException();
         }
+
+        log.info("User Registration Request - OrgId: " + userOrg.map(Org::getId).get());
 
         try {
             Optional<User> user = userService.createUser(orgUserCreateRequest, userOrg.orElseThrow(), passwordEncoder);
