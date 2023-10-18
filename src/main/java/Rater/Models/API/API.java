@@ -4,9 +4,10 @@ import Rater.Models.BuildComponent;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -18,9 +19,21 @@ public class API implements BuildComponent {
 
     private String name;
 
-    private int apiLimit;
+    private int basicLimit;
 
     private String flatStructure;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
+    private Set<IdRule> idRules;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
+    private Set<IpRule> ipRules;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
+    private Set<RoleRule> roleRules;
 
     @JsonBackReference
     @ManyToOne
@@ -33,7 +46,7 @@ public class API implements BuildComponent {
 
     public API(String name, int apiLimit, Service service, Org org) {
         this.name = name;
-        this.apiLimit = apiLimit;
+        this.basicLimit = apiLimit;
         this.service = service;
         this.flatStructure = calculateFlatStructure();
         this.orgId = org.getId();
@@ -60,12 +73,12 @@ public class API implements BuildComponent {
         this.name = name;
     }
 
-    public int getApiLimit() {
-        return apiLimit;
+    public int getBasicLimit() {
+        return basicLimit;
     }
 
-    public void setApiLimit(int apiLimit) {
-        this.apiLimit = apiLimit;
+    public void setBasicLimit(int apiLimit) {
+        this.basicLimit = apiLimit;
     }
 
     public Service getService() {
@@ -94,6 +107,14 @@ public class API implements BuildComponent {
 
     public void setFlatStructure(String flatStructure) {
         this.flatStructure = flatStructure;
+    }
+
+    public Set<IdRule> getIdRules() {
+        return idRules;
+    }
+
+    public void setIdRules(Set<IdRule> idRules) {
+        this.idRules = idRules;
     }
 
     private String calculateFlatStructure() {

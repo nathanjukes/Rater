@@ -1,12 +1,16 @@
 package RaterTests.Services;
 
+import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.API;
 import Rater.Models.API.APICreateRequest;
+import Rater.Models.API.IdRule;
+import Rater.Models.API.RuleCreateRequest;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import Rater.Repositories.APIRepository;
+import Rater.Repositories.IdRuleRepository;
 import Rater.Services.APIService;
 import Rater.Services.AppService;
 import Rater.Services.ServiceService;
@@ -30,6 +34,8 @@ public class ApiServiceTest {
     private APIService apiService;
     @Mock
     private APIRepository apiRepository;
+    @Mock
+    private IdRuleRepository idRuleRepository;
     @Mock
     private AppService appService;
     @Mock
@@ -125,6 +131,33 @@ public class ApiServiceTest {
 
         for (int i = 0; i < apiList.size(); i++) {
             assertEquals(apiList.get(i).getName(), comparisonList.get(i).getName());
+        }
+    }
+
+    @Test
+    public void testCreateAPIRule() throws BadRequestException, UnauthorizedException {
+        RuleCreateRequest ruleCreateRequest = new RuleCreateRequest("test", null, null, 10, UUID.randomUUID());
+        API testApi = new API("test", 10, testService, testOrg);
+
+        when(apiService.getAPI(ruleCreateRequest.getApiId())).thenReturn(Optional.of(testApi));
+        when(idRuleRepository.save(any())).thenReturn(IdRule.from(ruleCreateRequest, testApi));
+
+        apiService.createAPIRule(ruleCreateRequest, testOrg);
+
+        verify(idRuleRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testCreateAPIRuleBadAPI() throws BadRequestException {
+        RuleCreateRequest ruleCreateRequest = new RuleCreateRequest("test", null, null, 10, UUID.randomUUID());
+
+        when(apiService.getAPI(ruleCreateRequest.getApiId())).thenReturn(Optional.empty());
+
+        try {
+            apiService.createAPIRule(ruleCreateRequest, null);
+            fail();
+        } catch (Exception e) {
+            // passed
         }
     }
 }

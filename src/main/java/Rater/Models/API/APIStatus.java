@@ -9,7 +9,7 @@ public class APIStatus {
 
     public APIStatus(API api, int currentLoad) {
         this.apiId = api.getId();
-        this.apiLimit = api.getApiLimit();
+        this.apiLimit = api.getBasicLimit();
         this.currentLoad = currentLoad;
     }
 

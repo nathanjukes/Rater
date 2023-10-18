@@ -2,11 +2,12 @@ package Rater.Services;
 
 import Rater.Controllers.ServiceController;
 import Rater.Exceptions.UnauthorizedException;
-import Rater.Models.API.API;
-import Rater.Models.API.APICreateRequest;
-import Rater.Models.API.APIStatus;
+import Rater.Models.API.*;
 import Rater.Models.Org.Org;
 import Rater.Repositories.APIRepository;
+import Rater.Repositories.IdRuleRepository;
+import Rater.Repositories.IpRuleRepository;
+import Rater.Repositories.RoleRuleRepository;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,11 +24,17 @@ public class APIService {
     private static final Logger log = LogManager.getLogger(APIService.class);
 
     private final APIRepository apiRepository;
+    private final IdRuleRepository idRuleRepository;
+    private final IpRuleRepository ipRuleRepository;
+    private final RoleRuleRepository roleRuleRepository;
     private final ServiceService serviceService;
 
     @Autowired
-    public APIService(APIRepository apiRepository, ServiceService serviceService) {
+    public APIService(APIRepository apiRepository, IdRuleRepository idRuleRepository, IpRuleRepository ipRuleRepository, RoleRuleRepository roleRuleRepository, ServiceService serviceService) {
         this.apiRepository = apiRepository;
+        this.idRuleRepository = idRuleRepository;
+        this.ipRuleRepository = ipRuleRepository;
+        this.roleRuleRepository = roleRuleRepository;
         this.serviceService = serviceService;
     }
 
@@ -64,6 +71,26 @@ public class APIService {
 
         API api = new API(apiCreateRequest.getName(), 10, service.orElseThrow(), org);
         return Optional.of(apiRepository.save(api));
+    }
+
+    public Optional<Rule> createAPIRule(RuleCreateRequest ruleCreateRequest, Org org) throws UnauthorizedException {
+        Optional<API> api = getAPI(ruleCreateRequest.getApiId());
+
+        if (api.isEmpty() || !api.map(API::getOrgId).get().equals(org.getId())) {
+            log.info("API Rule Create Denied, Invalid Org: " + ruleCreateRequest.toString());
+            throw new UnauthorizedException();
+        }
+
+        if (ruleCreateRequest.getRuleType().equals(RuleType.IdRule)) {
+            IdRule rule = IdRule.from(ruleCreateRequest, api.orElseThrow());
+            return Optional.of(idRuleRepository.save(rule));
+        } else if (ruleCreateRequest.getRuleType().equals(RuleType.IpRule)){
+            IpRule rule = IpRule.from(ruleCreateRequest, api.orElseThrow());
+            return Optional.of(ipRuleRepository.save(rule));
+        } else {
+            RoleRule rule = RoleRule.from(ruleCreateRequest, api.orElseThrow());
+            return Optional.of(roleRuleRepository.save(rule));
+        }
     }
 
     public void deleteAPI(UUID id, Org org) {

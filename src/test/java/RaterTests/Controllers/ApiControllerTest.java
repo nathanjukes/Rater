@@ -1,11 +1,13 @@
 package RaterTests.Controllers;
 
 import Rater.Controllers.APIController;
+import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.API;
 import Rater.Models.API.APICreateRequest;
+import Rater.Models.API.RuleCreateRequest;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
@@ -102,5 +104,27 @@ public class ApiControllerTest {
 
         verify(apiService).getAPI(id);
         verify(apiService, times(0)).deleteAPI(id, testOrg);
+    }
+
+    @Test
+    public void testCreateAPIRule() throws BadRequestException, UnauthorizedException, InternalServerException {
+        RuleCreateRequest ruleCreateRequest = new RuleCreateRequest("test", null, null, 10, UUID.randomUUID());
+
+        apiController.createAPIRule(ruleCreateRequest);
+
+        verify(apiService, times(1)).createAPIRule(eq(ruleCreateRequest), any());
+    }
+
+    @Test
+    public void testCreateAPIRuleBadData() throws BadRequestException, UnauthorizedException, InternalServerException {
+        try {
+            RuleCreateRequest ruleCreateRequest = new RuleCreateRequest(null, null, null, 10, UUID.randomUUID());
+            apiController.createAPIRule(ruleCreateRequest);
+            fail();
+        } catch (Exception ex) {
+            // passed
+        }
+
+        verify(apiService, times(0)).createAPIRule(any(), any());
     }
 }
