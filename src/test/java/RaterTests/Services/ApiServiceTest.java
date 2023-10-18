@@ -1,11 +1,9 @@
 package RaterTests.Services;
 
 import Rater.Exceptions.BadRequestException;
+import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
-import Rater.Models.API.API;
-import Rater.Models.API.APICreateRequest;
-import Rater.Models.API.IdRule;
-import Rater.Models.API.RuleCreateRequest;
+import Rater.Models.API.*;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
@@ -159,5 +157,14 @@ public class ApiServiceTest {
         } catch (Exception e) {
             // passed
         }
+    }
+
+
+    @Test
+    public void testGetAPIRule() throws BadRequestException, InternalServerException, UnauthorizedException {
+        RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.id, UUID.randomUUID());
+        apiService.getRule(ruleGetRequest, testOrg);
+
+        verify(idRuleRepository, times(1)).findByUserId(any());
     }
 }

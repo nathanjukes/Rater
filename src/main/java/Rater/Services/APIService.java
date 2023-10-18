@@ -1,6 +1,5 @@
 package Rater.Services;
 
-import Rater.Controllers.ServiceController;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.*;
 import Rater.Models.Org.Org;
@@ -77,20 +76,39 @@ public class APIService {
         Optional<API> api = getAPI(ruleCreateRequest.getApiId());
 
         if (api.isEmpty() || !api.map(API::getOrgId).get().equals(org.getId())) {
-            log.info("API Rule Create Denied, Invalid Org: " + ruleCreateRequest.toString());
+            log.info("API Rule Create Denied, Invalid Org: " + ruleCreateRequest);
             throw new UnauthorizedException();
         }
 
-        if (ruleCreateRequest.getRuleType().equals(RuleType.IdRule)) {
+        if (ruleCreateRequest.getRuleType().equals(RuleType.id)) {
             IdRule rule = IdRule.from(ruleCreateRequest, api.orElseThrow());
             return Optional.of(idRuleRepository.save(rule));
-        } else if (ruleCreateRequest.getRuleType().equals(RuleType.IpRule)){
+        } else if (ruleCreateRequest.getRuleType().equals(RuleType.ip)){
             IpRule rule = IpRule.from(ruleCreateRequest, api.orElseThrow());
             return Optional.of(ipRuleRepository.save(rule));
         } else {
             RoleRule rule = RoleRule.from(ruleCreateRequest, api.orElseThrow());
             return Optional.of(roleRuleRepository.save(rule));
         }
+    }
+
+    public Optional<? extends Rule> getRule(RuleGetRequest ruleGetRequest, Org org) throws UnauthorizedException {
+        Optional<API> api = getAPI(ruleGetRequest.getApiId());
+
+        if (api.isEmpty() || !api.map(API::getOrgId).get().equals(org.getId())) {
+            log.info("API Rule Get Denied, Invalid Org: " + ruleGetRequest);
+            throw new UnauthorizedException();
+        }
+
+        switch (ruleGetRequest.getType()) {
+            case id:
+                return idRuleRepository.findByUserId(ruleGetRequest.getData());
+            case ip:
+                return ipRuleRepository.findByUserIp(ruleGetRequest.getData());
+            case role:
+                return roleRuleRepository.findByRole(ruleGetRequest.getData());
+        }
+        return Optional.empty();
     }
 
     public void deleteAPI(UUID id, Org org) {

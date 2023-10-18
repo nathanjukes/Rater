@@ -2,7 +2,6 @@ package Rater.Models.API;
 
 import Rater.Exceptions.BadRequestException;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
@@ -29,19 +28,19 @@ public class RuleCreateRequest {
             if (userIp != null || role != null) {
                 throw new BadRequestException();
             } else {
-                ruleType = RuleType.IdRule;
+                ruleType = RuleType.id;
             }
         } else if (userIp != null) {
             if (userId != null || role != null) {
                 throw new BadRequestException();
             } else {
-                ruleType = RuleType.IpRule;
+                ruleType = RuleType.ip;
             }
         } else if (role != null) {
             if (userId != null || userIp != null) {
                 throw new BadRequestException();
             } else {
-                ruleType = RuleType.RoleRule;
+                ruleType = RuleType.role;
             }
         } else {
             throw new BadRequestException("User Id/ Ip / Role must be present");

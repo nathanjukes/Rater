@@ -3,10 +3,7 @@ package Rater.Controllers;
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
-import Rater.Models.API.API;
-import Rater.Models.API.APICreateRequest;
-import Rater.Models.API.Rule;
-import Rater.Models.API.RuleCreateRequest;
+import Rater.Models.API.*;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import Rater.Models.Service.ServiceCreateRequest;
@@ -58,6 +55,16 @@ public class APIController {
         log.info("Create API Rule Request: " + ruleCreateRequest.toString());
 
         return ResponseEntity.ok(apiService.createAPIRule(ruleCreateRequest, org.orElseThrow()));
+    }
+
+    @RequestMapping(value = "/rules", method = GET)
+    public ResponseEntity<Optional<? extends Rule>> getApiRule(@RequestBody @Valid RuleGetRequest ruleGetRequest) throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        log.info("Get Rule Request: " + ruleGetRequest);
+
+        return ResponseEntity.ok(apiService.getRule(ruleGetRequest, org.orElseThrow()));
     }
 
     @PostAuthorize("@securityService.hasOrg(returnObject.body)")
