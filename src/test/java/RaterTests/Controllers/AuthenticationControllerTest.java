@@ -2,17 +2,24 @@ package RaterTests.Controllers;
 
 import Rater.Controllers.AppController;
 import Rater.Controllers.AuthenticationController;
+import Rater.Exceptions.BadRequestException;
+import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Auth.RefreshToken;
 import Rater.Models.Auth.RefreshTokenRequest;
 import Rater.Models.Auth.TokenResponse;
 import Rater.Models.Org.Org;
+import Rater.Models.Org.OrgCreateRequest;
+import Rater.Models.User.OrgUserCreateRequest;
 import Rater.Models.User.User;
+import Rater.Models.User.UserCreateRequest;
 import Rater.Security.JwtUtil;
 import Rater.Security.RefreshTokenService;
 import Rater.Security.SecurityService;
 import Rater.Services.AppService;
+import Rater.Services.OrgService;
+import Rater.Services.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +48,10 @@ public class AuthenticationControllerTest {
     private SecurityService securityService;
     @Mock
     private RefreshTokenService refreshTokenService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private OrgService orgService;
     @Spy
     private JwtUtil jwtUtil;
 
@@ -50,7 +61,43 @@ public class AuthenticationControllerTest {
     public void setup() throws InternalServerException, UnauthorizedException {
         testOrg = new Org("TestOrg");
         testOrg.setId(UUID.randomUUID());
+        when(orgService.getOrg(eq(testOrg.getId()))).thenReturn(Optional.of(testOrg));
         when(securityService.getAuthedOrg()).thenReturn(Optional.of(testOrg));
+    }
+
+    @Test
+    public void testUserAndOrgRegistration() throws InternalServerException, UnauthorizedException, BadRequestException, DataConflictException {
+        UserCreateRequest request = new UserCreateRequest("test", "test", "testorg");
+
+        when(orgService.createOrg(any())).thenReturn(Optional.of(testOrg));
+
+        authenticationController.userRegistrationAndOrgCreation(request);
+
+        verify(orgService, times(1)).createOrg(any());
+        verify(userService, times(1)).createUser(eq(request), eq(testOrg), any());
+    }
+
+    @Test
+    public void testUserRegistrationWithExistingOrg() throws InternalServerException, UnauthorizedException, BadRequestException {
+        OrgUserCreateRequest request = new OrgUserCreateRequest("test", "test", testOrg.getId());
+
+        authenticationController.userRegistrationWithOrgExisting(request);
+
+        verify(userService, times(1)).createUser(eq(request), eq(testOrg), any());
+    }
+
+    @Test
+    public void testUserRegistrationFailsWithIncorrectOrg() {
+        OrgUserCreateRequest request = new OrgUserCreateRequest("test", "test", UUID.randomUUID());
+
+        try {
+           authenticationController.userRegistrationWithOrgExisting(request);
+           fail();
+        } catch (Exception ex) {
+            // passed
+        }
+
+        verify(userService, times(0)).createUser(eq(request), eq(testOrg), any());
     }
 
     @Test
@@ -89,6 +136,13 @@ public class AuthenticationControllerTest {
         } catch (Exception ex) {
             // passed
         }
+    }
+
+    @Test
+    public void testLogout() throws InternalServerException, UnauthorizedException {
+        authenticationController.logout();
+
+        verify(refreshTokenService, times(1)).deleteRefreshToken();
     }
 
 }
