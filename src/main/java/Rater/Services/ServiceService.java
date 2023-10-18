@@ -6,6 +6,8 @@ import Rater.Models.Org.Org;
 import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Repositories.ServiceRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class ServiceService {
+    private static final Logger log = LogManager.getLogger(ServiceService.class);
+
     private final ServiceRepository serviceRepository;
     private final AppService appService;
 
@@ -29,6 +33,7 @@ public class ServiceService {
         Optional<App> app = appService.getApp(serviceCreateRequest.getAppId());
 
         if (app.isEmpty() || !app.map(App::getOrgId).get().equals(org.getId())) {
+            log.info("Service Create Denied, Invalid App: " + serviceCreateRequest.toString());
             throw new UnauthorizedException();
         }
 

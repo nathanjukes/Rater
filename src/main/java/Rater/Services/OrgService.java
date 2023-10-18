@@ -7,6 +7,8 @@ import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgCreateRequest;
 import Rater.Repositories.OrgRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -19,6 +21,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class OrgService {
+    private static final Logger log = LogManager.getLogger(OrgService.class);
+
     private OrgRepository orgRepository;
 
     @Autowired
@@ -30,6 +34,7 @@ public class OrgService {
         Org org = Org.from(orgCreateRequest);
 
         if (orgRepository.existsByName(org.getName())) {
+            log.info("Org Create Denied - Duplicate Name: " + org.getName());
             throw new BadRequestException();
         }
 

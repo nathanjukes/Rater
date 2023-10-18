@@ -5,6 +5,8 @@ import Rater.Models.App.AppCreateRequest;
 import Rater.Models.Org.Org;
 import Rater.Repositories.AppRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class AppService {
+    private static final Logger log = LogManager.getLogger(AppService.class);
+
     private final AppRepository appRepository;
     private final OrgService orgService;
 

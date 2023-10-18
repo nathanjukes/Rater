@@ -1,5 +1,6 @@
 package Rater.Services;
 
+import Rater.Controllers.ServiceController;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.API;
 import Rater.Models.API.APICreateRequest;
@@ -7,6 +8,8 @@ import Rater.Models.API.APIStatus;
 import Rater.Models.Org.Org;
 import Rater.Repositories.APIRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class APIService {
+    private static final Logger log = LogManager.getLogger(APIService.class);
+
     private final APIRepository apiRepository;
     private final ServiceService serviceService;
 
@@ -53,6 +58,7 @@ public class APIService {
         Optional<Rater.Models.Service.Service> service = serviceService.getService(apiCreateRequest.getServiceId());
 
         if (service.isEmpty() || !service.map(s -> s.getOrgId()).get().equals(org.getId())) {
+            log.info("API Create Denied, Invalid Service: " + apiCreateRequest.toString());
             throw new UnauthorizedException();
         }
 
