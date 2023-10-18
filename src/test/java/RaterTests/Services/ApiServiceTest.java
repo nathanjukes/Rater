@@ -159,7 +159,6 @@ public class ApiServiceTest {
         }
     }
 
-
     @Test
     public void testGetAPIRule() throws BadRequestException, InternalServerException, UnauthorizedException {
         RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.id, UUID.randomUUID());
