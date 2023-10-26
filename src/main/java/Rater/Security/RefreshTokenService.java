@@ -27,9 +27,7 @@ public class RefreshTokenService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public RefreshToken createRefreshToken() throws InternalServerException, UnauthorizedException {
-        Optional<User> userOpt = securityService.getAuthedUser();
-
+    public RefreshToken createRefreshToken(Optional<User> userOpt) {
         RefreshToken refreshToken = new RefreshToken(
                 userOpt.orElseThrow(),
                 UUID.randomUUID(),
@@ -37,6 +35,11 @@ public class RefreshTokenService {
         );
 
         return saveToken(refreshToken);
+    }
+
+    public RefreshToken createRefreshToken() throws InternalServerException, UnauthorizedException {
+        Optional<User> userOpt = securityService.getAuthedUser();
+        return createRefreshToken(userOpt);
     }
 
     private RefreshToken saveToken(RefreshToken refreshToken) {

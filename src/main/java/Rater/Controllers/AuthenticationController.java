@@ -67,7 +67,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/register", method = POST)
-    public ResponseEntity<Optional<User>> userRegistrationAndOrgCreation(@RequestBody @Valid UserCreateRequest userCreateRequest) throws BadRequestException, InternalServerException, DataConflictException {
+    public ResponseEntity<TokenResponse> userRegistrationAndOrgCreation(@RequestBody @Valid UserCreateRequest userCreateRequest) throws BadRequestException, InternalServerException, DataConflictException {
         Optional<Org> userOrg = orgService.createOrg(new OrgCreateRequest(userCreateRequest.getOrgName()));
 
         if (userOrg.isEmpty()) {
@@ -78,7 +78,12 @@ public class AuthenticationController {
 
         try {
             Optional<User> user = userService.createUser(userCreateRequest, userOrg.orElseThrow(), passwordEncoder);
-            return ResponseEntity.ok(user);
+
+            TokenResponse jwt = jwtUtil.generateTokenResponse(user.map(User::getEmail).orElseThrow());
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+            jwt.setRefreshToken(refreshToken.getToken().toString());
+
+            return ResponseEntity.ok(jwt);
         } catch (DataIntegrityViolationException ex) {
             orgService.deleteOrg(userOrg.get().getId());
             throw new BadRequestException();
