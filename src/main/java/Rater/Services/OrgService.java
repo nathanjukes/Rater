@@ -30,12 +30,12 @@ public class OrgService {
         this.orgRepository = orgRepository;
     }
 
-    public Optional<Org> createOrg(OrgCreateRequest orgCreateRequest) throws InternalServerException, BadRequestException {
+    public Optional<Org> createOrg(OrgCreateRequest orgCreateRequest) throws InternalServerException, DataConflictException {
         Org org = Org.from(orgCreateRequest);
 
         if (orgRepository.existsByName(org.getName())) {
             log.info("Org Create Denied - Duplicate Name: " + org.getName());
-            throw new BadRequestException();
+            throw new DataConflictException();
         }
 
         try {

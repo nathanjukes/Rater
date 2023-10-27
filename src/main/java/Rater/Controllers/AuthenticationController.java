@@ -31,10 +31,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -66,6 +63,7 @@ public class AuthenticationController {
         this.jwtUtil = jwtUtil;
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/register", method = POST)
     public ResponseEntity<TokenResponse> userRegistrationAndOrgCreation(@RequestBody @Valid UserCreateRequest userCreateRequest) throws BadRequestException, InternalServerException, DataConflictException {
         Optional<Org> userOrg = orgService.createOrg(new OrgCreateRequest(userCreateRequest.getOrgName()));
@@ -86,7 +84,7 @@ public class AuthenticationController {
             return ResponseEntity.ok(jwt);
         } catch (DataIntegrityViolationException ex) {
             orgService.deleteOrg(userOrg.get().getId());
-            throw new BadRequestException();
+            throw new DataConflictException();
         } catch (Exception ex) {
             orgService.deleteOrg(userOrg.get().getId());
             throw new InternalServerException();
