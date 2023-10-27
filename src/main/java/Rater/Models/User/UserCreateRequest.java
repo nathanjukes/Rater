@@ -18,7 +18,7 @@ public class UserCreateRequest {
 
     @JsonCreator
     public UserCreateRequest(String email, String password, String orgName) {
-        this.email = email;
+        this.email = email.toLowerCase();
         this.password = password;
         this.orgName = orgName;
     }

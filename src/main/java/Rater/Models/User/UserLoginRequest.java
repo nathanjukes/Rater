@@ -14,7 +14,7 @@ public class UserLoginRequest {
 
     @JsonCreator
     public UserLoginRequest(String email, String password) {
-        this.email = email;
+        this.email = email.toLowerCase();
         this.password = password;
     }
 

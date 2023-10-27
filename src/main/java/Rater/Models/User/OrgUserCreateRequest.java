@@ -21,7 +21,7 @@ public class OrgUserCreateRequest {
 
     @JsonCreator
     public OrgUserCreateRequest(String email, String password, UUID orgId) {
-        this.email = email;
+        this.email = email.toLowerCase();
         this.password = password;
         this.orgId = orgId;
     }

@@ -116,6 +116,7 @@ public class AuthenticationController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/login", method = POST)
     public ResponseEntity<TokenResponse> userLogin(@RequestBody @Valid UserLoginRequest userLoginRequest) throws InternalServerException, UnauthorizedException {
         Authentication auth = authenticationManager.authenticate(
@@ -132,6 +133,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(jwt);
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/refreshToken", method = POST)
     public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) throws UnauthorizedException {
         Optional<RefreshToken> refreshToken = refreshTokenService.getRefreshToken(refreshTokenRequest.getRefreshToken());
@@ -145,6 +147,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(jwt);
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/logout", method = POST)
     public ResponseEntity<?> logout() throws InternalServerException, UnauthorizedException {
         refreshTokenService.deleteRefreshToken();
