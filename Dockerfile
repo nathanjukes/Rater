@@ -20,4 +20,8 @@ WORKDIR /opt/app
 # Copy the jar from the maven stage to the /opt/app directory of the current stage.
 COPY --from=maven /usr/src/app/target/${JAR_FILE} /opt/app/
 
+ENV DB_URL=a
+ENV DB_USERNAME=b
+ENV DB_PASSWORD=c
+
 ENTRYPOINT ["java","-jar","rater-management-service.jar"]
