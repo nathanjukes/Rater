@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  rater-rate-control-api:
+    container_name: api
+    image: rater-management-service.img
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    restart: always

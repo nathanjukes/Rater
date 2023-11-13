@@ -30,10 +30,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,7 +55,7 @@ public class AuthenticationControllerTest {
     private UserService userService;
     @Mock
     private OrgService orgService;
-    @Spy
+    @Mock
     private JwtUtil jwtUtil;
 
     private Org testOrg;
@@ -68,8 +71,13 @@ public class AuthenticationControllerTest {
     @Test
     public void testUserAndOrgRegistration() throws InternalServerException, UnauthorizedException, BadRequestException, DataConflictException {
         UserCreateRequest request = new UserCreateRequest("test", "test", "testorg");
+        RefreshToken refreshToken = spy(RefreshToken.class);
 
         when(orgService.createOrg(any())).thenReturn(Optional.of(testOrg));
+        when(userService.createUser(any(UserCreateRequest.class), any(), any())).thenReturn(Optional.of(new User("test", "password", testOrg)));
+        when(jwtUtil.generateTokenResponse(anyString())).thenReturn(new TokenResponse("test", Date.from(Instant.now())));
+        when(refreshTokenService.createRefreshToken(any())).thenReturn(refreshToken);
+        when(refreshToken.getToken()).thenReturn(UUID.randomUUID());
 
         authenticationController.userRegistrationAndOrgCreation(request);
 
