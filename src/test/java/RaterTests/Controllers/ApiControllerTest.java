@@ -103,34 +103,4 @@ public class ApiControllerTest {
         verify(apiService).getAPI(id);
         verify(apiService, times(0)).deleteAPI(id, testOrg);
     }
-
-    @Test
-    public void testCreateAPIRule() throws BadRequestException, UnauthorizedException, InternalServerException {
-        RuleCreateRequest ruleCreateRequest = new RuleCreateRequest("test", null, null, 10, UUID.randomUUID());
-
-        apiController.createAPIRule(ruleCreateRequest);
-
-        verify(apiService, times(1)).createAPIRule(eq(ruleCreateRequest), any());
-    }
-
-    @Test
-    public void testCreateAPIRuleBadData() throws BadRequestException, UnauthorizedException, InternalServerException {
-        try {
-            RuleCreateRequest ruleCreateRequest = new RuleCreateRequest(null, null, null, 10, UUID.randomUUID());
-            apiController.createAPIRule(ruleCreateRequest);
-            fail();
-        } catch (Exception ex) {
-            // passed
-        }
-
-        verify(apiService, times(0)).createAPIRule(any(), any());
-    }
-
-    @Test
-    public void testGetAPIRule() throws BadRequestException, InternalServerException, UnauthorizedException {
-        RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.ip, UUID.randomUUID());
-        apiController.getApiRule(ruleGetRequest);
-
-        verify(apiService, times(1)).getRule(eq(ruleGetRequest), eq(testOrg));
-    }
 }
