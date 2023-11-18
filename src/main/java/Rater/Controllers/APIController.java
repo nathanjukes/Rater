@@ -47,7 +47,7 @@ public class APIController {
         return ResponseEntity.ok(apiService.createAPI(apiCreateRequest, org.orElseThrow()));
     }
 
-    @RequestMapping(value = "/rules", method = POST)
+    @RequestMapping(value = "/rules/create", method = POST)
     public ResponseEntity<Optional<Rule>> createAPIRule(@RequestBody @Valid RuleCreateRequest ruleCreateRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
@@ -57,7 +57,7 @@ public class APIController {
         return ResponseEntity.ok(apiService.createAPIRule(ruleCreateRequest, org.orElseThrow()));
     }
 
-    @RequestMapping(value = "/rules", method = GET)
+    @RequestMapping(value = "/rules", method = POST)
     public ResponseEntity<Optional<? extends Rule>> getApiRule(@RequestBody @Valid RuleGetRequest ruleGetRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
