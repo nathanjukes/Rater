@@ -94,8 +94,13 @@ public class APIService {
 
     public Optional<API> searchAPI(String apiName, String fullApi, HttpMethod httpMethod, UUID serviceId, Org org) {
         // api name + service id pair is unique so should be searchable
+        Optional<API> api = apiRepository.searchApiByFullName(fullApi, httpMethod.toString(), serviceId, org.getId());
 
-        return apiRepository.searchApi(apiName, fullApi, httpMethod.toString(), serviceId, org.getId());
+        if (api.isEmpty()) {
+            return apiRepository.searchApiByName(apiName, httpMethod.toString(), serviceId, org.getId());
+        }
+
+        return api;
     }
 
     public Optional<? extends Rule> getRule(RuleGetRequest ruleGetRequest, Org org) throws UnauthorizedException {

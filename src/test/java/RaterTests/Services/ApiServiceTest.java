@@ -163,8 +163,13 @@ public class ApiServiceTest {
     @Test
     public void testGetAPIRule() throws BadRequestException, InternalServerException, UnauthorizedException {
         RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.id, UUID.randomUUID());
+        API testApi = new API("test", 10, testService, GET, testOrg);
+        testApi.setId(UUID.randomUUID());
+
+        when(apiService.getAPI(ruleGetRequest.getApiId())).thenReturn(Optional.of(testApi));
+
         apiService.getRule(ruleGetRequest, testOrg);
 
-        verify(idRuleRepository, times(1)).findByUserId(any());
+        verify(idRuleRepository, times(1)).findByUserIdAndApiId(any(), any());
     }
 }
