@@ -25,6 +25,10 @@ public interface APIRepository extends JpaRepository<API, UUID> {
     @Query(value = "SELECT * FROM apis WHERE org_id = ?1", nativeQuery = true)
     Optional<List<API>> findByOrgId(UUID orgId);
 
+
+    @Query(value = "SELECT * FROM apis WHERE (name = ?1 OR name = ?2) AND http_method = ?3 AND service_id = ?4 AND org_id = ?5", nativeQuery = true)
+    Optional<API> searchApi(String apiName, String fullApiName, String httpMethod, UUID serviceId, UUID orgId);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM apis WHERE id = ?1 AND org_id = ?2", nativeQuery = true)

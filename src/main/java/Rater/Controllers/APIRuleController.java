@@ -5,6 +5,7 @@ import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.Rule;
 import Rater.Models.API.RuleCreateRequest;
 import Rater.Models.API.RuleGetRequest;
+import Rater.Models.API.RuleSearchRequest;
 import Rater.Models.Org.Org;
 import Rater.Security.SecurityService;
 import Rater.Services.APIService;
@@ -54,5 +55,15 @@ public class APIRuleController {
         log.info("Get Rule Request: " + ruleGetRequest);
 
         return ResponseEntity.ok(apiService.getRule(ruleGetRequest, org.orElseThrow()));
+    }
+
+    @RequestMapping(value = "/search", method = POST)
+    public ResponseEntity<Optional<? extends Rule>> searchForApiRule(@RequestBody @Valid RuleSearchRequest ruleSearchRequest) throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        log.info("Search Rule Request: " + ruleSearchRequest.toString());
+
+        return ResponseEntity.ok(apiService.searchRule(ruleSearchRequest, org.orElseThrow()));
     }
 }

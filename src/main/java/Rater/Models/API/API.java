@@ -23,6 +23,8 @@ public class API implements BuildComponent {
 
     private String flatStructure;
 
+    private String httpMethod;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
     private Set<IdRule> idRules;
@@ -44,11 +46,12 @@ public class API implements BuildComponent {
 
     private UUID appId;
 
-    public API(String name, int apiLimit, Service service, Org org) {
+    public API(String name, int apiLimit, Service service, HttpMethod httpMethod, Org org) {
         this.name = name;
         this.basicLimit = apiLimit;
         this.service = service;
         this.flatStructure = calculateFlatStructure();
+        this.httpMethod = httpMethod.toString();
         this.orgId = org.getId();
         this.appId = service.getAppId();
     }
@@ -107,6 +110,14 @@ public class API implements BuildComponent {
 
     public void setFlatStructure(String flatStructure) {
         this.flatStructure = flatStructure;
+    }
+
+    public String getHttpMethod() {
+        return httpMethod;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
     }
 
     public Set<IdRule> getIdRules() {

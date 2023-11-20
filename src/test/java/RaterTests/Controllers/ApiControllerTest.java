@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Optional;
 import java.util.UUID;
 
+import static Rater.Models.API.HttpMethod.GET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -51,7 +52,7 @@ public class ApiControllerTest {
 
     @Test
     public void testCreateAPI() throws InternalServerException, UnauthorizedException, DataConflictException {
-        APICreateRequest apiCreateRequest = new APICreateRequest("testAPI", testService.getId());
+        APICreateRequest apiCreateRequest = new APICreateRequest("testAPI", testService.getId(), GET);
 
         apiController.createAPI(apiCreateRequest);
 
@@ -82,7 +83,7 @@ public class ApiControllerTest {
     public void testDeleteAPI() throws InternalServerException, UnauthorizedException {
         UUID id = UUID.randomUUID();
 
-        API testAPI = new API("testAPI", 10, testService, testOrg);
+        API testAPI = new API("testAPI", 10, testService, GET, testOrg);
         doReturn(Optional.of(testAPI)).when(apiService).getAPI(id);
 
         apiController.deleteAPI(id);
@@ -95,7 +96,7 @@ public class ApiControllerTest {
     public void testDeleteAPIInvalidOrgId() throws InternalServerException, UnauthorizedException {
         UUID id = UUID.randomUUID();
 
-        API testAPI = new API("testAPI", 10, testService, new Org("t"));
+        API testAPI = new API("testAPI", 10, testService, GET, new Org("t"));
         doReturn(Optional.of(testAPI)).when(apiService).getAPI(id);
 
         apiController.deleteAPI(id);

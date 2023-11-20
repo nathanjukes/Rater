@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static Rater.Models.API.HttpMethod.GET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -48,7 +49,7 @@ public class ApiServiceTest {
         testOrg.setId(UUID.randomUUID());
         testApp = new App("testApp", testOrg);
         testService = new Service("testService", testApp, testOrg);
-        API testAPI = new API("testApi", 10, testService, testOrg);
+        API testAPI = new API("testApi", 10, testService, GET, testOrg);
 
         when(apiRepository.findById(any())).thenReturn(Optional.of(testAPI));
         when(apiRepository.findByOrgId(any())).thenReturn(Optional.of(List.of(testAPI)));
@@ -75,8 +76,8 @@ public class ApiServiceTest {
 
     @Test
     public void testCreateAPI() throws UnauthorizedException {
-        APICreateRequest request = new APICreateRequest("Testingapi", testService.getId());
-        API api = new API(request.getName(), 10, testService, testOrg);
+        APICreateRequest request = new APICreateRequest("Testingapi", testService.getId(), GET);
+        API api = new API(request.getName(), 10, testService, GET, testOrg);
 
         when(apiRepository.save(any())).thenReturn(api);
         when(serviceService.getService(any())).thenReturn(Optional.ofNullable(testService));
@@ -91,8 +92,8 @@ public class ApiServiceTest {
 
     @Test
     public void testCreateAPIDatabaseIssue() {
-        APICreateRequest request = new APICreateRequest("Testapi", testService.getId());
-        API api = new API(request.getName(), 10, testService, testOrg);
+        APICreateRequest request = new APICreateRequest("Testapi", testService.getId(), GET);
+        API api = new API(request.getName(), 10, testService, GET, testOrg);
 
         when(apiRepository.save(any())).thenThrow(new RuntimeException("something bad"));
 
@@ -123,7 +124,7 @@ public class ApiServiceTest {
 
     @Test
     public void testGetAllAPIs() {
-        List<API> apiList = List.of(new API("testApi", 10, testService, testOrg));
+        List<API> apiList = List.of(new API("testApi", 10, testService, GET, testOrg));
 
         List<API> comparisonList = apiService.getAPIs(UUID.randomUUID(), null, null).get();
 
@@ -135,7 +136,7 @@ public class ApiServiceTest {
     @Test
     public void testCreateAPIRule() throws BadRequestException, UnauthorizedException {
         RuleCreateRequest ruleCreateRequest = new RuleCreateRequest("test", null, null, 10, UUID.randomUUID());
-        API testApi = new API("test", 10, testService, testOrg);
+        API testApi = new API("test", 10, testService, GET, testOrg);
 
         when(apiService.getAPI(ruleCreateRequest.getApiId())).thenReturn(Optional.of(testApi));
         when(idRuleRepository.save(any())).thenReturn(IdRule.from(ruleCreateRequest, testApi));

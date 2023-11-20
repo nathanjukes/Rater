@@ -68,7 +68,7 @@ public class APIService {
             throw new UnauthorizedException();
         }
 
-        API api = new API(apiCreateRequest.getName(), 10, service.orElseThrow(), org);
+        API api = new API(apiCreateRequest.getName(), 10, service.orElseThrow(), apiCreateRequest.getHttpMethod(), org);
         return Optional.of(apiRepository.save(api));
     }
 
@@ -92,6 +92,12 @@ public class APIService {
         }
     }
 
+    public Optional<API> searchAPI(String apiName, String fullApi, HttpMethod httpMethod, UUID serviceId, Org org) {
+        // api name + service id pair is unique so should be searchable
+
+        return apiRepository.searchApi(apiName, fullApi, httpMethod.toString(), serviceId, org.getId());
+    }
+
     public Optional<? extends Rule> getRule(RuleGetRequest ruleGetRequest, Org org) throws UnauthorizedException {
         Optional<API> api = getAPI(ruleGetRequest.getApiId());
 
@@ -102,12 +108,41 @@ public class APIService {
 
         switch (ruleGetRequest.getType()) {
             case id:
-                return idRuleRepository.findByUserId(ruleGetRequest.getData());
+                return idRuleRepository.findByUserIdAndApiId(ruleGetRequest.getData(), api.map(API::getId).orElseThrow());
             case ip:
                 return ipRuleRepository.findByUserIp(ruleGetRequest.getData());
             case role:
                 return roleRuleRepository.findByRole(ruleGetRequest.getData());
         }
+        return Optional.empty();
+    }
+
+    public Optional<? extends Rule> searchRule(RuleSearchRequest ruleSearchRequest, Org org) throws UnauthorizedException {
+        RuleSearchQuery ruleSearchQuery = RuleSearchQuery.from(ruleSearchRequest);
+
+        // Get API first
+        Optional<API> api = searchAPI(
+                ruleSearchQuery.getApiName(),
+                ruleSearchQuery.getFullApi(),
+                ruleSearchQuery.getHttpMethod(),
+                ruleSearchQuery.getServiceId(),
+                org
+        );
+
+        if (api.isEmpty() || !api.map(API::getOrgId).get().equals(org.getId())) {
+            log.info("API Rule Search Denied: " + ruleSearchRequest.toString());
+            throw new UnauthorizedException();
+        }
+
+        switch (ruleSearchRequest.getType()) {
+            case id:
+                return idRuleRepository.findByUserIdAndApiId(ruleSearchRequest.getData(), api.map(API::getId).orElseThrow());
+            case ip:
+                return ipRuleRepository.findByUserIp(ruleSearchRequest.getData());
+            case role:
+                return roleRuleRepository.findByRole(ruleSearchRequest.getData());
+        }
+
         return Optional.empty();
     }
 

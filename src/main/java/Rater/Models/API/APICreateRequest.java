@@ -11,11 +11,14 @@ public class APICreateRequest {
     private String name;
     @NotNull
     private UUID serviceId;
+    @NotNull
+    private HttpMethod httpMethod;
 
     @JsonCreator
-    public APICreateRequest(String name, UUID serviceId) {
+    public APICreateRequest(String name, UUID serviceId, HttpMethod httpMethod) {
         this.name = name;
         this.serviceId = serviceId;
+        this.httpMethod = httpMethod;
     }
 
     public String getName() {
@@ -24,5 +27,9 @@ public class APICreateRequest {
 
     public UUID getServiceId() {
         return serviceId;
+    }
+
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
     }
 }
