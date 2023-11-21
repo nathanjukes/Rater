@@ -80,7 +80,7 @@ public class ApiServiceTest {
 
     @Test
     public void testCreateAPI() throws UnauthorizedException {
-        APICreateRequest request = new APICreateRequest("Testingapi", testService.getId(), GET);
+        APICreateRequest request = new APICreateRequest("Testingapi", testService.getId(), GET, 20);
         API api = new API(request.getName(), 10, testService, GET, testOrg);
 
         when(apiRepository.save(any())).thenReturn(api);
@@ -96,7 +96,7 @@ public class ApiServiceTest {
 
     @Test
     public void testCreateAPIDatabaseIssue() {
-        APICreateRequest request = new APICreateRequest("Testapi", testService.getId(), GET);
+        APICreateRequest request = new APICreateRequest("Testapi", testService.getId(), GET, 10);
         API api = new API(request.getName(), 10, testService, GET, testOrg);
 
         when(apiRepository.save(any())).thenThrow(new RuntimeException("something bad"));

@@ -52,7 +52,7 @@ public class ApiControllerTest {
 
     @Test
     public void testCreateAPI() throws InternalServerException, UnauthorizedException, DataConflictException {
-        APICreateRequest apiCreateRequest = new APICreateRequest("testAPI", testService.getId(), GET);
+        APICreateRequest apiCreateRequest = new APICreateRequest("testAPI", testService.getId(), GET, 10);
 
         apiController.createAPI(apiCreateRequest);
 

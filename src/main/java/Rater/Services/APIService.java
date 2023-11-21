@@ -69,7 +69,7 @@ public class APIService {
             throw new UnauthorizedException();
         }
 
-        API api = new API(apiCreateRequest.getName(), 10, service.orElseThrow(), apiCreateRequest.getHttpMethod(), org);
+        API api = new API(apiCreateRequest.getName(), apiCreateRequest.getBasicLimit(), service.orElseThrow(), apiCreateRequest.getHttpMethod(), org);
         return Optional.of(apiRepository.save(api));
     }
 

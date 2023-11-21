@@ -13,12 +13,15 @@ public class APICreateRequest {
     private UUID serviceId;
     @NotNull
     private HttpMethod httpMethod;
+    @NotNull
+    private int basicLimit;
 
     @JsonCreator
-    public APICreateRequest(String name, UUID serviceId, HttpMethod httpMethod) {
+    public APICreateRequest(String name, UUID serviceId, HttpMethod httpMethod, Integer basicLimit) {
         this.name = name;
         this.serviceId = serviceId;
         this.httpMethod = httpMethod;
+        this.basicLimit = basicLimit;
     }
 
     public String getName() {
@@ -31,5 +34,9 @@ public class APICreateRequest {
 
     public HttpMethod getHttpMethod() {
         return httpMethod;
+    }
+
+    public int getBasicLimit() {
+        return basicLimit;
     }
 }
