@@ -1,4 +1,6 @@
-package Rater.Models.API;
+package Rater.Models.API.Rules;
+
+import Rater.Models.API.HttpMethod;
 
 import java.util.UUID;
 

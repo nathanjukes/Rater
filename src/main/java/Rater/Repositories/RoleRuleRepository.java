@@ -1,7 +1,6 @@
 package Rater.Repositories;
 
-import Rater.Models.API.IdRule;
-import Rater.Models.API.RoleRule;
+import Rater.Models.API.Rules.RoleRule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

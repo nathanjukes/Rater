@@ -1,13 +1,12 @@
 package RaterTests.Controllers;
 
-import Rater.Controllers.APIController;
 import Rater.Controllers.APIRuleController;
 import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
-import Rater.Models.API.RuleCreateRequest;
-import Rater.Models.API.RuleGetRequest;
-import Rater.Models.API.RuleType;
+import Rater.Models.API.Rules.RuleCreateRequest;
+import Rater.Models.API.Rules.RuleGetRequest;
+import Rater.Models.API.Rules.RuleType;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;

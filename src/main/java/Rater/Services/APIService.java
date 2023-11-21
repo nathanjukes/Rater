@@ -2,6 +2,7 @@ package Rater.Services;
 
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.*;
+import Rater.Models.API.Rules.*;
 import Rater.Models.Org.Org;
 import Rater.Repositories.APIRepository;
 import Rater.Repositories.IdRuleRepository;
@@ -111,15 +112,25 @@ public class APIService {
             throw new UnauthorizedException();
         }
 
+        Optional<? extends Rule> r = Optional.empty();
         switch (ruleGetRequest.getType()) {
             case id:
-                return idRuleRepository.findByUserIdAndApiId(ruleGetRequest.getData(), api.map(API::getId).orElseThrow());
+                r = idRuleRepository.findByUserIdAndApiId(ruleGetRequest.getData(), api.map(API::getId).orElseThrow());
+                break;
             case ip:
-                return ipRuleRepository.findByUserIp(ruleGetRequest.getData());
+                r = ipRuleRepository.findByUserIp(ruleGetRequest.getData());
+                break;
             case role:
-                return roleRuleRepository.findByRole(ruleGetRequest.getData());
+                r = roleRuleRepository.findByRole(ruleGetRequest.getData());
+                break;
         }
-        return Optional.empty();
+
+        // Resort to base limit if a custom rule does not exist
+        if (r == null || r.isEmpty()) {
+            r = api.map(API::getBaseRule);
+        }
+
+        return r;
     }
 
     public Optional<? extends Rule> searchRule(RuleSearchRequest ruleSearchRequest, Org org) throws UnauthorizedException {

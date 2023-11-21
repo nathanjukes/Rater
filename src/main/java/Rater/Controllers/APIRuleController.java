@@ -2,10 +2,10 @@ package Rater.Controllers;
 
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
-import Rater.Models.API.Rule;
-import Rater.Models.API.RuleCreateRequest;
-import Rater.Models.API.RuleGetRequest;
-import Rater.Models.API.RuleSearchRequest;
+import Rater.Models.API.Rules.Rule;
+import Rater.Models.API.Rules.RuleCreateRequest;
+import Rater.Models.API.Rules.RuleGetRequest;
+import Rater.Models.API.Rules.RuleSearchRequest;
 import Rater.Models.Org.Org;
 import Rater.Security.SecurityService;
 import Rater.Services.APIService;
@@ -52,7 +52,7 @@ public class APIRuleController {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
-        log.info("Get Rule Request: " + ruleGetRequest);
+        log.info("Get Rule Request: " + ruleGetRequest.toString());
 
         return ResponseEntity.ok(apiService.getRule(ruleGetRequest, org.orElseThrow()));
     }

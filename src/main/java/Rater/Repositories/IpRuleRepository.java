@@ -1,6 +1,6 @@
 package Rater.Repositories;
 
-import Rater.Models.API.IpRule;
+import Rater.Models.API.Rules.IpRule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,9 +1,12 @@
-package Rater.Models.API;
+package Rater.Models.API.Rules;
 
+import Rater.Models.API.API;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.UUID;
+
+import static Rater.Models.API.Rules.CustomRuleType.custom;
 
 
 @Entity
@@ -44,6 +47,7 @@ public class RoleRule implements Rule {
         return role;
     }
 
+    @Override
     public int getUseLimit() {
         return useLimit;
     }
@@ -75,5 +79,10 @@ public class RoleRule implements Rule {
     @Override
     public double getPermittedRate() {
         return (double) useLimit / timePeriod;
+    }
+
+    @Override
+    public CustomRuleType getCustomRuleType() {
+        return custom;
     }
 }

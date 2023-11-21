@@ -1,5 +1,9 @@
 package Rater.Models.API;
 
+import Rater.Models.API.Rules.BaseRule;
+import Rater.Models.API.Rules.IdRule;
+import Rater.Models.API.Rules.IpRule;
+import Rater.Models.API.Rules.RoleRule;
 import Rater.Models.BuildComponent;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
@@ -130,5 +134,9 @@ public class API implements BuildComponent {
 
     private String calculateFlatStructure() {
         return service.getFlatStructure() + "/" + getName();
+    }
+
+    public BaseRule getBaseRule() {
+        return new BaseRule(basicLimit);
     }
 }

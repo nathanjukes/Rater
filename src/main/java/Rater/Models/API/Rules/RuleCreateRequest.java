@@ -1,4 +1,4 @@
-package Rater.Models.API;
+package Rater.Models.API.Rules;
 
 import Rater.Exceptions.BadRequestException;
 import com.fasterxml.jackson.annotation.JsonCreator;

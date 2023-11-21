@@ -1,4 +1,4 @@
-package Rater.Models.API;
+package Rater.Models.API.Rules;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package Rater.Models.API;
+package Rater.Models.API.Rules;
 
 public enum RuleType {
     id, ip, role

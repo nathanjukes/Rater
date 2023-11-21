@@ -1,13 +1,12 @@
 package RaterTests.Models.API;
 
 import Rater.Models.API.*;
-import org.junit.Test;
+import Rater.Models.API.Rules.RuleSearchQuery;
+import Rater.Models.API.Rules.RuleSearchRequest;
+import Rater.Models.API.Rules.RuleType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.UUID;
 import java.util.stream.Stream;
