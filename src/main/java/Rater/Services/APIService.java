@@ -112,25 +112,7 @@ public class APIService {
             throw new UnauthorizedException();
         }
 
-        Optional<? extends Rule> r = Optional.empty();
-        switch (ruleGetRequest.getType()) {
-            case id:
-                r = idRuleRepository.findByUserIdAndApiId(ruleGetRequest.getData(), api.map(API::getId).orElseThrow());
-                break;
-            case ip:
-                r = ipRuleRepository.findByUserIp(ruleGetRequest.getData());
-                break;
-            case role:
-                r = roleRuleRepository.findByRole(ruleGetRequest.getData());
-                break;
-        }
-
-        // Resort to base limit if a custom rule does not exist
-        if (r == null || r.isEmpty()) {
-            r = api.map(API::getBaseRule);
-        }
-
-        return r;
+        return findRule(ruleGetRequest.getType(), ruleGetRequest.getData(), api);
     }
 
     public Optional<? extends Rule> searchRule(RuleSearchRequest ruleSearchRequest, Org org) throws UnauthorizedException {
@@ -150,16 +132,30 @@ public class APIService {
             throw new UnauthorizedException();
         }
 
-        switch (ruleSearchRequest.getType()) {
+        return findRule(ruleSearchRequest.getType(), ruleSearchQuery.getData(), api);
+    }
+
+    private Optional<? extends Rule> findRule(RuleType ruleType, String data, Optional<API> api) {
+        Optional<? extends Rule> r = Optional.empty();
+
+        switch (ruleType) {
             case id:
-                return idRuleRepository.findByUserIdAndApiId(ruleSearchRequest.getData(), api.map(API::getId).orElseThrow());
+                r = idRuleRepository.findByUserIdAndApiId(data, api.map(API::getId).orElseThrow());
+                break;
             case ip:
-                return ipRuleRepository.findByUserIp(ruleSearchRequest.getData());
+                r = ipRuleRepository.findByUserIpAndApiId(data, api.map(API::getId).orElseThrow());
+                break;
             case role:
-                return roleRuleRepository.findByRole(ruleSearchRequest.getData());
+                r = roleRuleRepository.findByRoleAndApiId(data, api.map(API::getId).orElseThrow());
+                break;
         }
 
-        return Optional.empty();
+        // Resort to base limit if a custom rule does not exist
+        if (r == null || r.isEmpty()) {
+            r = api.map(API::getBaseRule);
+        }
+
+        return r;
     }
 
     public void deleteAPI(UUID id, Org org) {

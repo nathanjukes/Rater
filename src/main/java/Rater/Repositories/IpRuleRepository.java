@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface IpRuleRepository extends JpaRepository<IpRule, UUID> {
-    Optional<IpRule> findByUserIp(String userIp);
+    Optional<IpRule> findByUserIpAndApiId(String userIp, UUID apiId);
 }
