@@ -2,6 +2,7 @@ package Rater.Controllers;
 
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.Health.HealthObject;
 import Rater.Models.Org.Org;
 import Rater.Models.User.User;
 import Rater.Security.SecurityService;
@@ -30,8 +31,8 @@ public class HealthController {
     }
 
     @RequestMapping(method = GET)
-    public ResponseEntity<String> getHealth() {
-        return ResponseEntity.ok("healthy");
+    public ResponseEntity<HealthObject> getHealth() {
+        return ResponseEntity.ok(new HealthObject("healthy"));
     }
 
     @CrossOrigin
