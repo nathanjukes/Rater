@@ -39,6 +39,7 @@ public class ServiceController {
         this.securityService = securityService;
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<Optional<Service>> createService(@RequestBody @Valid ServiceCreateRequest serviceCreateRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
@@ -49,6 +50,7 @@ public class ServiceController {
         return ResponseEntity.ok(serviceService.createService(serviceCreateRequest, org.orElseThrow()));
     }
 
+    @CrossOrigin
     @PostAuthorize("@securityService.hasOrg(returnObject.body)")
     @RequestMapping(value = "/{serviceId}", method = GET)
     public ResponseEntity<Optional<Service>> getService(@PathVariable UUID serviceId) {

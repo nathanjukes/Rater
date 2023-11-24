@@ -37,6 +37,7 @@ public class AppController {
         this.securityService = securityService;
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<Optional<App>> createApp(@RequestBody @Valid AppCreateRequest appCreateRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
@@ -47,6 +48,7 @@ public class AppController {
         return ResponseEntity.ok(appService.createApp(appCreateRequest, org.get()));
     }
 
+    @CrossOrigin
     @PostAuthorize("@securityService.hasOrg(returnObject.body)")
     @RequestMapping(value = "/{appId}", method = GET)
     public ResponseEntity<Optional<App>> getApp(@PathVariable UUID appId) {
@@ -60,6 +62,7 @@ public class AppController {
         return ResponseEntity.ok(appOpt);
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = GET)
     public ResponseEntity<?> getApps() throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();

@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +38,7 @@ public class APIRuleController {
         this.securityService = securityService;
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/create", method = POST)
     public ResponseEntity<Optional<Rule>> createAPIRule(@RequestBody @Valid RuleCreateRequest ruleCreateRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();

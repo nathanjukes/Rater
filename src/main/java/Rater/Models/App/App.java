@@ -88,6 +88,14 @@ public class App implements BuildComponent {
         return org.getName() + "/" + getName();
     }
 
+    public int getApiCount() {
+        try {
+            return (int) getServices().stream().flatMap(s -> s.getApis().stream()).mapToLong(a -> 1).count();
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
     public static App from(AppCreateRequest appCreateRequest, Org org) {
         return new App(appCreateRequest.getName(), org);
     }

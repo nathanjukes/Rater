@@ -37,6 +37,7 @@ public class APIController {
         this.securityService = securityService;
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<Optional<API>> createAPI(@RequestBody @Valid APICreateRequest apiCreateRequest) throws DataConflictException, InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
@@ -47,6 +48,7 @@ public class APIController {
         return ResponseEntity.ok(apiService.createAPI(apiCreateRequest, org.orElseThrow()));
     }
 
+    @CrossOrigin
     @PostAuthorize("@securityService.hasOrg(returnObject.body)")
     @RequestMapping(value = "/{apiId}", method = GET)
     public ResponseEntity<Optional<API>> getAPI(@PathVariable UUID apiId) throws UnauthorizedException, InternalServerException {
