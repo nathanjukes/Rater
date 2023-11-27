@@ -45,7 +45,6 @@ public class RuleSearchQuery {
         HttpMethod httpMethod = HttpMethod.valueOf(splitData[0]);
 
         // Does not account for /users?id=10 but this shouldn't be permissable anyways
-        // Need to add support for /users/create e.g.
         String[] subSplitData = splitData[1].split("/");
         String apiName = subSplitData[0];
 

@@ -136,44 +136,4 @@ public class ApiServiceTest {
             assertEquals(apiList.get(i).getName(), comparisonList.get(i).getName());
         }
     }
-
-    @Test
-    public void testCreateAPIRule() throws BadRequestException, UnauthorizedException {
-        RuleCreateRequest ruleCreateRequest = new RuleCreateRequest("test", null, null, 10, UUID.randomUUID());
-        API testApi = new API("test", 10, testService, GET, testOrg);
-
-        when(apiService.getAPI(ruleCreateRequest.getApiId())).thenReturn(Optional.of(testApi));
-        when(idRuleRepository.save(any())).thenReturn(IdRule.from(ruleCreateRequest, testApi));
-
-        apiService.createAPIRule(ruleCreateRequest, testOrg);
-
-        verify(idRuleRepository, times(1)).save(any());
-    }
-
-    @Test
-    public void testCreateAPIRuleBadAPI() throws BadRequestException {
-        RuleCreateRequest ruleCreateRequest = new RuleCreateRequest("test", null, null, 10, UUID.randomUUID());
-
-        when(apiService.getAPI(ruleCreateRequest.getApiId())).thenReturn(Optional.empty());
-
-        try {
-            apiService.createAPIRule(ruleCreateRequest, null);
-            fail();
-        } catch (Exception e) {
-            // passed
-        }
-    }
-
-    @Test
-    public void testGetAPIRule() throws BadRequestException, InternalServerException, UnauthorizedException {
-        RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.id, UUID.randomUUID());
-        API testApi = new API("test", 10, testService, GET, testOrg);
-        testApi.setId(UUID.randomUUID());
-
-        when(apiService.getAPI(ruleGetRequest.getApiId())).thenReturn(Optional.of(testApi));
-
-        apiService.getRule(ruleGetRequest, testOrg);
-
-        verify(idRuleRepository, times(1)).findByUserIdAndApiId(any(), any());
-    }
 }

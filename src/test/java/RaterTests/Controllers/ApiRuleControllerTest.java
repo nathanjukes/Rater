@@ -6,11 +6,13 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.Rules.RuleCreateRequest;
 import Rater.Models.API.Rules.RuleGetRequest;
+import Rater.Models.API.Rules.RuleSearchRequest;
 import Rater.Models.API.Rules.RuleType;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import Rater.Security.SecurityService;
+import Rater.Services.APIRuleService;
 import Rater.Services.APIService;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +34,7 @@ public class ApiRuleControllerTest {
     @InjectMocks
     private APIRuleController apiRuleController;
     @Mock
-    private APIService apiService;
+    private APIRuleService apiRuleService;
     @Mock
     private SecurityService securityService;
 
@@ -56,11 +58,11 @@ public class ApiRuleControllerTest {
 
         apiRuleController.createAPIRule(ruleCreateRequest);
 
-        verify(apiService, times(1)).createAPIRule(eq(ruleCreateRequest), any());
+        verify(apiRuleService, times(1)).createAPIRule(eq(ruleCreateRequest), any());
     }
 
     @Test
-    public void testCreateAPIRuleBadData() throws BadRequestException, UnauthorizedException, InternalServerException {
+    public void testCreateAPIRuleBadData() throws UnauthorizedException {
         try {
             RuleCreateRequest ruleCreateRequest = new RuleCreateRequest(null, null, null, 10, UUID.randomUUID());
             apiRuleController.createAPIRule(ruleCreateRequest);
@@ -69,14 +71,22 @@ public class ApiRuleControllerTest {
             // passed
         }
 
-        verify(apiService, times(0)).createAPIRule(any(), any());
+        verify(apiRuleService, times(0)).createAPIRule(any(), any());
     }
 
     @Test
-    public void testGetAPIRule() throws BadRequestException, InternalServerException, UnauthorizedException {
+    public void testGetAPIRule() throws InternalServerException, UnauthorizedException {
         RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.ip, UUID.randomUUID());
         apiRuleController.getApiRule(ruleGetRequest);
 
-        verify(apiService, times(1)).getRule(eq(ruleGetRequest), eq(testOrg));
+        verify(apiRuleService, times(1)).getRule(eq(ruleGetRequest), eq(testOrg));
+    }
+
+    @Test
+    public void testSearchAPIRule() throws InternalServerException, UnauthorizedException {
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest("data", RuleType.ip, UUID.randomUUID(), "/users");
+        apiRuleController.searchForApiRule(ruleSearchRequest);
+
+        verify(apiRuleService, times(1)).searchRule(eq(ruleSearchRequest), eq(testOrg));
     }
 }

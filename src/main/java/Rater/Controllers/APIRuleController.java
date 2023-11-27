@@ -8,7 +8,7 @@ import Rater.Models.API.Rules.RuleGetRequest;
 import Rater.Models.API.Rules.RuleSearchRequest;
 import Rater.Models.Org.Org;
 import Rater.Security.SecurityService;
-import Rater.Services.APIService;
+import Rater.Services.APIRuleService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,12 +29,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class APIRuleController {
     private static final Logger log = LogManager.getLogger(APIRuleController.class);
 
-    private final APIService apiService;
+    private final APIRuleService apiRuleService;
     private final SecurityService securityService;
 
     @Autowired
-    public APIRuleController(APIService apiService, SecurityService securityService) {
-        this.apiService = apiService;
+    public APIRuleController(APIRuleService apiRuleService, SecurityService securityService) {
+        this.apiRuleService = apiRuleService;
         this.securityService = securityService;
     }
 
@@ -46,7 +46,7 @@ public class APIRuleController {
 
         log.info("Create API Rule Request: " + ruleCreateRequest.toString());
 
-        return ResponseEntity.ok(apiService.createAPIRule(ruleCreateRequest, org.orElseThrow()));
+        return ResponseEntity.ok(apiRuleService.createAPIRule(ruleCreateRequest, org.orElseThrow()));
     }
 
     @RequestMapping(value = "", method = POST)
@@ -56,7 +56,7 @@ public class APIRuleController {
 
         log.info("Get Rule Request: " + ruleGetRequest.toString());
 
-        return ResponseEntity.ok(apiService.getRule(ruleGetRequest, org.orElseThrow()));
+        return ResponseEntity.ok(apiRuleService.getRule(ruleGetRequest, org.orElseThrow()));
     }
 
     @RequestMapping(value = "/search", method = POST)
@@ -66,6 +66,6 @@ public class APIRuleController {
 
         log.info("Search Rule Request: " + ruleSearchRequest.toString());
 
-        return ResponseEntity.ok(apiService.searchRule(ruleSearchRequest, org.orElseThrow()));
+        return ResponseEntity.ok(apiRuleService.searchRule(ruleSearchRequest, org.orElseThrow()));
     }
 }
