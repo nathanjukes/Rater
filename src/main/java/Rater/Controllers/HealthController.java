@@ -34,10 +34,4 @@ public class HealthController {
     public ResponseEntity<HealthObject> getHealth() {
         return ResponseEntity.ok(new HealthObject("healthy"));
     }
-
-    @CrossOrigin
-    @RequestMapping(method = GET, value = "/me")
-    public ResponseEntity<Optional<User>> getUser() throws InternalServerException, UnauthorizedException {
-        return ResponseEntity.ok(securityService.getAuthedUser());
-    }
 }
