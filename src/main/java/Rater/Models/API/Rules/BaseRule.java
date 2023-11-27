@@ -4,6 +4,7 @@ import static Rater.Models.API.Rules.CustomRuleType.basic;
 
 public class BaseRule implements Rule {
     private int useLimit;
+    private final int timePeriod = 60;
 
     public BaseRule(int useLimit) {
         this.useLimit = useLimit;
@@ -20,7 +21,7 @@ public class BaseRule implements Rule {
     }
 
     @Override
-    public double getPermittedRate() {
-        return 0;
+    public double getPermittedRatePerSecond() {
+        return (double) useLimit / timePeriod;
     }
 }

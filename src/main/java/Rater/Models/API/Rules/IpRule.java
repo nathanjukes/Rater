@@ -81,7 +81,7 @@ public class IpRule implements Rule {
     }
 
     @Override
-    public double getPermittedRate() {
+    public double getPermittedRatePerSecond() {
         return (double) useLimit / timePeriod;
     }
 
