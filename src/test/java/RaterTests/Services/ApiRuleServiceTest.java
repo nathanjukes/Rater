@@ -4,15 +4,15 @@ import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.API;
-import Rater.Models.API.Rules.IdRule;
-import Rater.Models.API.Rules.RuleCreateRequest;
-import Rater.Models.API.Rules.RuleGetRequest;
-import Rater.Models.API.Rules.RuleType;
+import Rater.Models.API.HttpMethod;
+import Rater.Models.API.Rules.*;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import Rater.Repositories.APIRepository;
 import Rater.Repositories.IdRuleRepository;
+import Rater.Repositories.IpRuleRepository;
+import Rater.Repositories.RoleRuleRepository;
 import Rater.Services.APIRuleService;
 import Rater.Services.APIService;
 import Rater.Services.AppService;
@@ -44,6 +44,10 @@ public class ApiRuleServiceTest {
     private APIRepository apiRepository;
     @Mock
     private IdRuleRepository idRuleRepository;
+    @Mock
+    private IpRuleRepository ipRuleRepository;
+    @Mock
+    private RoleRuleRepository roleRuleRepository;
     @Mock
     private AppService appService;
     @Mock
@@ -94,7 +98,7 @@ public class ApiRuleServiceTest {
     }
 
     @Test
-    public void testGetAPIRule() throws BadRequestException, InternalServerException, UnauthorizedException {
+    public void testGetAPIRuleId() throws BadRequestException, InternalServerException, UnauthorizedException {
         RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.id, UUID.randomUUID());
         API testApi = new API("test", 10, testService, GET, testOrg);
         testApi.setId(UUID.randomUUID());
@@ -104,5 +108,43 @@ public class ApiRuleServiceTest {
         apiRuleService.getRule(ruleGetRequest, testOrg);
 
         verify(idRuleRepository, times(1)).findByUserIdAndApiId(any(), any());
+    }
+
+    @Test
+    public void testGetAPIRuleIp() throws BadRequestException, InternalServerException, UnauthorizedException {
+        RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.ip, UUID.randomUUID());
+        API testApi = new API("test", 10, testService, GET, testOrg);
+        testApi.setId(UUID.randomUUID());
+
+        when(apiService.getAPI(ruleGetRequest.getApiId())).thenReturn(Optional.of(testApi));
+
+        apiRuleService.getRule(ruleGetRequest, testOrg);
+
+        verify(ipRuleRepository, times(1)).findByUserIpAndApiId(any(), any());
+    }
+
+    @Test
+    public void testGetAPIRuleRole() throws BadRequestException, InternalServerException, UnauthorizedException {
+        RuleGetRequest ruleGetRequest = new RuleGetRequest("data", RuleType.role, UUID.randomUUID());
+        API testApi = new API("test", 10, testService, GET, testOrg);
+        testApi.setId(UUID.randomUUID());
+
+        when(apiService.getAPI(ruleGetRequest.getApiId())).thenReturn(Optional.of(testApi));
+
+        apiRuleService.getRule(ruleGetRequest, testOrg);
+
+        verify(roleRuleRepository, times(1)).findByRoleAndApiId(any(), any());
+    }
+
+    @Test
+    public void testSearchAPIRule() throws UnauthorizedException {
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest("data", RuleType.ip, UUID.randomUUID(), "GET:/users");
+        API testApi = new API("test", 10, testService, GET, testOrg);
+        testApi.setId(UUID.randomUUID());
+
+        when(apiService.searchAPI(eq("users"), eq("users"), eq(HttpMethod.GET), eq(ruleSearchRequest.getServiceId()), eq(testOrg))).thenReturn(Optional.of(testApi));
+        apiRuleService.searchRule(ruleSearchRequest, testOrg);
+
+        verify(ipRuleRepository, times(1)).findByUserIpAndApiId(any(), any());
     }
 }
