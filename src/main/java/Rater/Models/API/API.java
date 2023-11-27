@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"name", "service_id"}))
+@Table(name = "apis", uniqueConstraints=@UniqueConstraint(columnNames={"name", "service_id", "http_method"}))
 public class API implements BuildComponent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +27,7 @@ public class API implements BuildComponent {
 
     private String flatStructure;
 
+    @Column(name = "http_method")
     private String httpMethod;
 
     @JsonManagedReference
