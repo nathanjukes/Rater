@@ -59,6 +59,12 @@ public class OrgController {
         return ResponseEntity.ok(orgService.getOrgs());
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/me", method = GET)
+    public ResponseEntity<Optional<Org>> getOrgFromAuthToken() throws InternalServerException, UnauthorizedException {
+        return ResponseEntity.ok(securityService.getAuthedOrg());
+    }
+
     @RequestMapping(value = "", method = DELETE)
     public ResponseEntity<?> deleteOrg() throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
