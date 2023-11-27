@@ -40,9 +40,4 @@ public class HealthController {
     public ResponseEntity<Optional<User>> getUser() throws InternalServerException, UnauthorizedException {
         return ResponseEntity.ok(securityService.getAuthedUser());
     }
-
-    @RequestMapping(method = GET, value = "/mew")
-    public ResponseEntity<Optional<User>> getUser2() throws InternalServerException, UnauthorizedException {
-        return ResponseEntity.ok(Optional.of(new User("test", "testpass", new Org("tr3ijt"))));
-    }
 }
