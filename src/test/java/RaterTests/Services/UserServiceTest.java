@@ -73,7 +73,7 @@ public class UserServiceTest {
         String password = "testPassword";
         Org org = new Org("testOrg");
 
-        OrgUserCreateRequest userCreateRequest = new OrgUserCreateRequest(email, password, UUID.randomUUID())di;
+        OrgUserCreateRequest userCreateRequest = new OrgUserCreateRequest(email, password, UUID.randomUUID());
 
         userService.createUser(userCreateRequest, org, passwordEncoder);
 
