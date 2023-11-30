@@ -69,6 +69,7 @@ public class APIController {
         return ResponseEntity.ok(apiService.getAPIs(org.map(Org::getId).get(), appId, serviceId));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/{apiId}", method = DELETE)
     public ResponseEntity<?> deleteAPI(@PathVariable UUID apiId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();

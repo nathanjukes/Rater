@@ -72,6 +72,7 @@ public class ServiceController {
         return ResponseEntity.ok(serviceService.getServices(org.map(Org::getId).get(), appId));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/{serviceId}", method = DELETE)
     public ResponseEntity<?> deleteService(@PathVariable UUID serviceId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();

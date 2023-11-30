@@ -49,6 +49,7 @@ public class APIRuleController {
         return ResponseEntity.ok(apiRuleService.createAPIRule(ruleCreateRequest, org.orElseThrow()));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = POST)
     public ResponseEntity<Optional<? extends Rule>> getApiRule(@RequestBody @Valid RuleGetRequest ruleGetRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();

@@ -71,6 +71,7 @@ public class AppController {
         return ResponseEntity.ok(appService.getApps(org.map(Org::getId).get()));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/{appId}", method = DELETE)
     public ResponseEntity<?> deleteApp(@PathVariable UUID appId) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
