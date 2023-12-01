@@ -60,6 +60,7 @@ public class APIController {
         return ResponseEntity.ok(apiOpt);
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = GET)
     public ResponseEntity<?> getAPIs(@RequestParam(required = false) UUID appId,
                                      @RequestParam(required = false) UUID serviceId) throws UnauthorizedException, InternalServerException {

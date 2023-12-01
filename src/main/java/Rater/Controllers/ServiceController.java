@@ -64,6 +64,7 @@ public class ServiceController {
         return ResponseEntity.ok(serviceOpt);
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = GET)
     public ResponseEntity<?> getServices(@RequestParam(required = false) UUID appId) throws UnauthorizedException, InternalServerException {
         Optional<Org> org = securityService.getAuthedOrg();
