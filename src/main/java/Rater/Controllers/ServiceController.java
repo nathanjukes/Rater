@@ -1,14 +1,11 @@
 package Rater.Controllers;
 
-import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
-import Rater.Models.App.App;
 import Rater.Models.Org.Org;
-import Rater.Models.Org.OrgCreateRequest;
 import Rater.Models.Service.Service;
 import Rater.Models.Service.ServiceCreateRequest;
-import Rater.Models.User.User;
+import Rater.Models.User.ServiceAccountCreateRequest;
 import Rater.Security.SecurityService;
 import Rater.Services.ServiceService;
 import jakarta.validation.Valid;
@@ -41,13 +38,20 @@ public class ServiceController {
 
     @CrossOrigin
     @RequestMapping(value = "", method = POST)
-    public ResponseEntity<Optional<Service>> createService(@RequestBody @Valid ServiceCreateRequest serviceCreateRequest) throws InternalServerException, UnauthorizedException {
+    public ResponseEntity<?> createService(@RequestBody @Valid ServiceCreateRequest serviceCreateRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
         log.info("Service Create Request: " + serviceCreateRequest);
 
-        return ResponseEntity.ok(serviceService.createService(serviceCreateRequest, org.orElseThrow()));
+        Optional<Service> service = serviceService.createService(serviceCreateRequest, org.orElseThrow());
+
+        if (service.isPresent()) {
+            serviceService.createServiceAccount(new ServiceAccountCreateRequest(service.map(Service::getId).orElseThrow()), org.orElseThrow());
+            return ResponseEntity.ok(service);
+        }
+
+        return ResponseEntity.badRequest().body(Optional.empty());
     }
 
     @CrossOrigin
@@ -85,6 +89,7 @@ public class ServiceController {
             return ResponseEntity.notFound().build();
         }
         serviceService.deleteService(serviceId, org.get());
+        serviceService.deleteServiceAccount(serviceId, org.get());
 
         return ResponseEntity.ok("Deleted: " + org.map(o -> o.getName()).orElseThrow() + "/" + serviceId);
     }

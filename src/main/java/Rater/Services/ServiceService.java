@@ -4,11 +4,13 @@ import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.ServiceCreateRequest;
+import Rater.Models.User.ServiceAccountCreateRequest;
 import Rater.Repositories.ServiceRepository;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,11 +24,15 @@ public class ServiceService {
 
     private final ServiceRepository serviceRepository;
     private final AppService appService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ServiceService(ServiceRepository serviceRepository, AppService appService) {
+    public ServiceService(ServiceRepository serviceRepository, AppService appService, UserService userService, PasswordEncoder passwordEncoder) {
         this.serviceRepository = serviceRepository;
         this.appService = appService;
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<Rater.Models.Service.Service> createService(ServiceCreateRequest serviceCreateRequest, Org org) throws UnauthorizedException {
@@ -40,6 +46,10 @@ public class ServiceService {
         Rater.Models.Service.Service service = new Rater.Models.Service.Service(serviceCreateRequest.getName(), app.orElseThrow(), org);
 
         return Optional.ofNullable(serviceRepository.save(service));
+    }
+
+    public void createServiceAccount(ServiceAccountCreateRequest serviceAccountCreateRequest, Org org) {
+        userService.createUser(serviceAccountCreateRequest, org, passwordEncoder);
     }
 
     public Optional<List<Rater.Models.Service.Service>> getServices(UUID orgId, UUID appId) {
@@ -59,5 +69,9 @@ public class ServiceService {
 
     public void deleteService(UUID id, Org org) {
         serviceRepository.deleteByIdAndOrgId(id, org.getId());
+    }
+
+    public void deleteServiceAccount(UUID id, Org org) {
+        userService.deleteUser(id.toString(), org);
     }
 }

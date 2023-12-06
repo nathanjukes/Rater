@@ -7,6 +7,8 @@ import Rater.Models.Org.Org;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Set;
 import java.util.UUID;
@@ -23,7 +25,8 @@ public class Service implements BuildComponent {
     private String flatStructure;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<API> apis;
 
     @JsonBackReference

@@ -2,6 +2,7 @@ package Rater.Services;
 
 import Rater.Models.Org.Org;
 import Rater.Models.User.OrgUserCreateRequest;
+import Rater.Models.User.ServiceAccountCreateRequest;
 import Rater.Models.User.User;
 import Rater.Models.User.UserCreateRequest;
 import Rater.Repositories.UserRepository;
@@ -46,5 +47,19 @@ public class UserService {
         orgUserCreateRequest.encode(passwordEncoder);
         User user = User.from(orgUserCreateRequest, org);
         return Optional.ofNullable(userRepository.save(user));
+    }
+
+    public Optional<User> createUser(ServiceAccountCreateRequest serviceAccountCreateRequest, Org org, PasswordEncoder passwordEncoder) {
+        serviceAccountCreateRequest.encode(passwordEncoder);
+        User user = User.from(serviceAccountCreateRequest, org);
+        return Optional.ofNullable(userRepository.save(user));
+    }
+
+    public void deleteUser(UUID id, Org org) {
+        userRepository.deleteById(id);
+    }
+
+    public void deleteUser(String email, Org org) {
+        userRepository.deleteByEmail(email);
     }
 }
