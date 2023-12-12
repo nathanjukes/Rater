@@ -87,7 +87,7 @@ public class APIRuleService {
         }
     }
 
-    public Optional<? extends Rule> searchRule(RuleSearchRequest ruleSearchRequest, Org org) throws UnauthorizedException {
+    public Optional<SearchRuleResponse> searchRule(RuleSearchRequest ruleSearchRequest, Org org) throws UnauthorizedException {
         RuleSearchQuery ruleSearchQuery = RuleSearchQuery.from(ruleSearchRequest);
 
         // Get API first
@@ -104,6 +104,6 @@ public class APIRuleService {
             throw new UnauthorizedException();
         }
 
-        return findRule(ruleSearchRequest.getType(), ruleSearchQuery.getData(), api);
+        return Optional.of(new SearchRuleResponse(findRule(ruleSearchRequest.getType(), ruleSearchQuery.getData(), api), api));
     }
 }
