@@ -10,7 +10,6 @@ public class ApiMetric {
     private Map<UUID, Long> topUsersAccepted;
     private Map<UUID, Long> topUsersDenied;
 
-
     public ApiMetric(Double acceptedCount, Double deniedCount, List<Object[]> topUsersAccepted, List<Object[]> topUsersDenied) {
         this.acceptedCount = acceptedCount;
         this.deniedCount = deniedCount;
