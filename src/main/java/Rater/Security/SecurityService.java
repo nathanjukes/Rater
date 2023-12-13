@@ -2,10 +2,12 @@ package Rater.Security;
 
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.API.API;
 import Rater.Models.App.App;
 import Rater.Models.BuildComponent;
 import Rater.Models.Org.Org;
 import Rater.Models.User.User;
+import Rater.Services.APIService;
 import Rater.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,10 +20,12 @@ import java.util.UUID;
 @Service
 public class SecurityService {
     private final UserService userService;
+    private final APIService apiService;
 
     @Autowired
-    public SecurityService(UserService userService) {
+    public SecurityService(UserService userService, APIService apiService) {
         this.userService = userService;
+        this.apiService = apiService;
     }
 
     public boolean hasOrg(String orgName) throws InternalServerException, UnauthorizedException {
@@ -68,5 +72,19 @@ public class SecurityService {
         if (org.isEmpty()) {
             throw new UnauthorizedException();
         }
+    }
+
+    public void throwIfNoAuth(Optional<Org> org, UUID apiId) throws UnauthorizedException {
+        if (org.isEmpty()) {
+            throw new UnauthorizedException();
+        }
+        if (!apiHasOrgId(apiId, org.map(Org::getId).orElseThrow(UnauthorizedException::new))) {
+            throw new UnauthorizedException();
+        }
+    }
+
+    private boolean apiHasOrgId(UUID apiId, UUID orgId) throws UnauthorizedException {
+        Optional<API> api = apiService.getAPI(apiId);
+        return api.map(API::getOrgId).orElseThrow(UnauthorizedException::new).equals(orgId);
     }
 }
