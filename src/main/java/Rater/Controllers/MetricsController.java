@@ -13,10 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -39,6 +36,7 @@ public class MetricsController {
         this.securityService = securityService;
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/apis/{apiId}", method = GET)
     public ResponseEntity<ApiMetric> getApiMetric(@PathVariable UUID apiId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
@@ -47,6 +45,7 @@ public class MetricsController {
         return ResponseEntity.ok(metricsService.getApiMetrics(apiId, org.map(Org::getId).orElseThrow(UnauthorizedException::new), startTime, endTime));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/orgs", method = GET)
     public ResponseEntity<OrgMetric> getOrgMetrics(@RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
