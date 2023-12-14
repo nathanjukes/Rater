@@ -1,10 +1,13 @@
 package Rater.Services;
 
+import Rater.Controllers.MetricsController;
 import Rater.Exceptions.BadRequestException;
 import Rater.Models.Metrics.ApiMetric;
 import Rater.Models.Metrics.OrgMetric;
 import Rater.Repositories.MetricsRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -13,6 +16,8 @@ import java.util.*;
 @Service
 @Transactional
 public class MetricsService {
+    private static final Logger log = LogManager.getLogger(MetricsService.class);
+
     private final int SECONDS_IN_DAY = 86400;
     private MetricsRepository metricsRepository;
     private AppService appService;
@@ -26,6 +31,7 @@ public class MetricsService {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;
         if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
+            log.info("Get API Metrics Request Denied, bad time inputs: {} {}", lowerBound, upperBound);
             throw new BadRequestException();
         }
 
@@ -44,6 +50,7 @@ public class MetricsService {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;
         if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
+            log.info("Get Org Metrics Request Denied, bad time inputs: {} {}", lowerBound, upperBound);
             throw new BadRequestException();
         }
 
