@@ -1,4 +1,4 @@
-package Rater.Models.API;
+package Rater.Models.Metrics;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -132,8 +132,12 @@ public class API implements BuildComponent {
         return idRules;
     }
 
-    public void setIdRules(Set<IdRule> idRules) {
-        this.idRules = idRules;
+    public Set<IpRule> getIpRules() {
+        return ipRules;
+    }
+
+    public Set<RoleRule> getRoleRules() {
+        return roleRules;
     }
 
     private String calculateFlatStructure() {
