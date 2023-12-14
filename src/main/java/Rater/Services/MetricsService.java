@@ -25,7 +25,7 @@ public class MetricsService {
     public ApiMetric getApiMetrics(UUID apiId, UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;
-        if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY).isAfter(lowerBound)) {
+        if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
             throw new BadRequestException();
         }
 
@@ -43,7 +43,7 @@ public class MetricsService {
     public OrgMetric getOrgMetrics(UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;
-        if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY).isAfter(lowerBound)) {
+        if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
             throw new BadRequestException();
         }
 
