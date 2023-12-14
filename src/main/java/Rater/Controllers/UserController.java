@@ -2,6 +2,7 @@ package Rater.Controllers;
 
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.Org.Org;
 import Rater.Models.User.User;
 import Rater.Security.SecurityService;
 import Rater.Services.UserService;
@@ -9,15 +10,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static Rater.Security.SecurityService.throwIfNoAuth;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
@@ -39,9 +38,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = GET)
-    public ResponseEntity<List<User>> getUsers() {
-        return ResponseEntity.ok(userService.getUsers());
+    public ResponseEntity<List<User>> getUsers() throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        return ResponseEntity.ok(userService.getUsers(org.map(Org::getId).orElseThrow(UnauthorizedException::new)));
     }
 
     @CrossOrigin

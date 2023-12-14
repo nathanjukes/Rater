@@ -49,9 +49,10 @@ public class UserServiceTest {
 
     @Test
     public void testGetUsers() {
-        userService.getUsers();
+        UUID orgId = UUID.randomUUID();
+        userService.getUsers(orgId);
 
-        verify(userRepository, times(1)).findAll();
+        verify(userRepository, times(1)).findByOrgId(eq(orgId));
     }
 
     @Test

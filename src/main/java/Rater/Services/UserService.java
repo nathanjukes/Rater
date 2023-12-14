@@ -33,8 +33,8 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<User> getUsers(UUID orgId) {
+        return userRepository.findByOrgId(orgId);
     }
 
     public Optional<User> createUser(UserCreateRequest userCreateRequest, Org org, PasswordEncoder passwordEncoder) {
