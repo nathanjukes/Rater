@@ -89,7 +89,7 @@ public class User {
     }
 
     public static User from(OrgUserCreateRequest userCreateRequest, Org org) {
-        return new User(userCreateRequest.getEmail(), userCreateRequest.getPassword(), org, user);
+        return new User(userCreateRequest.getEmail(), userCreateRequest.getPassword(), org, userCreateRequest.getRole());
     }
 
     public static User from(ServiceAccountCreateRequest serviceAccountCreateRequest, Org org) {

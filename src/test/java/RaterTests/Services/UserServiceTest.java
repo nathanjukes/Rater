@@ -1,9 +1,11 @@
 package RaterTests.Services;
 
+import Rater.Exceptions.BadRequestException;
 import Rater.Models.Org.Org;
 import Rater.Models.User.OrgUserCreateRequest;
 import Rater.Models.User.User;
 import Rater.Models.User.UserCreateRequest;
+import Rater.Models.User.UserRole;
 import Rater.Repositories.UserRepository;
 import Rater.Services.UserService;
 import org.junit.Test;
@@ -69,12 +71,12 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testCreateOrgUser() {
+    public void testCreateOrgUser() throws BadRequestException {
         String email = "testEmail";
         String password = "testPassword";
         Org org = new Org("testOrg");
 
-        OrgUserCreateRequest userCreateRequest = new OrgUserCreateRequest(email, password, UUID.randomUUID());
+        OrgUserCreateRequest userCreateRequest = new OrgUserCreateRequest(email, password, UUID.randomUUID(), "user");
 
         userService.createUser(userCreateRequest, org, passwordEncoder);
 

@@ -88,7 +88,7 @@ public class AuthenticationControllerTest {
 
     @Test
     public void testUserRegistrationWithExistingOrg() throws InternalServerException, UnauthorizedException, BadRequestException {
-        OrgUserCreateRequest request = new OrgUserCreateRequest("test", "test", testOrg.getId());
+        OrgUserCreateRequest request = new OrgUserCreateRequest("test", "test", testOrg.getId(), "user");
 
         authenticationController.userRegistrationWithOrgExisting(request);
 
@@ -96,8 +96,8 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void testUserRegistrationFailsWithIncorrectOrg() {
-        OrgUserCreateRequest request = new OrgUserCreateRequest("test", "test", UUID.randomUUID());
+    public void testUserRegistrationFailsWithIncorrectOrg() throws BadRequestException {
+        OrgUserCreateRequest request = new OrgUserCreateRequest("test", "test", UUID.randomUUID(), "user");
 
         try {
            authenticationController.userRegistrationWithOrgExisting(request);
