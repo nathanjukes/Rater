@@ -91,6 +91,7 @@ public class AuthenticationController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/registerOrgUser", method = POST)
     public ResponseEntity<Optional<User>> userRegistrationWithOrgExisting(@RequestBody @Valid OrgUserCreateRequest orgUserCreateRequest) throws BadRequestException, InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
