@@ -66,7 +66,9 @@ public class UserController {
         Optional<User> auth = securityService.getAuthedUser();
         throwIfNoAuth(org);
 
+        log.info("Delete user request for userId: {}", id);
         if (auth.isEmpty() || !isAuthedToOperate(auth) || auth.map(User::getId).get().equals(id)) {
+            log.info("Delete user request for userId: {} failed - no auth or self delete", id);
             throw new UnauthorizedException();
         }
 
@@ -75,6 +77,7 @@ public class UserController {
         if (user.map(User::getRole).orElseThrow().equals(UserRole.user)) {
             refreshTokenService.deleteRefreshToken(id);
         } else {
+            log.info("Error deleting user {} - role is not user", id);
             throw new BadRequestException();
         }
 
