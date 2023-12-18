@@ -9,10 +9,7 @@ import Rater.Models.Auth.RefreshTokenRequest;
 import Rater.Models.Auth.TokenResponse;
 import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgCreateRequest;
-import Rater.Models.User.OrgUserCreateRequest;
-import Rater.Models.User.User;
-import Rater.Models.User.UserCreateRequest;
-import Rater.Models.User.UserLoginRequest;
+import Rater.Models.User.*;
 import Rater.Security.JwtUtil;
 import Rater.Security.RefreshTokenService;
 import Rater.Security.SecurityService;
@@ -107,6 +104,10 @@ public class AuthenticationController {
 
         log.info("User Registration Request - OrgId: " + userOrg.map(Org::getId).get());
 
+        if (!UserRole.user.equals(orgUserCreateRequest.getRole()) && !isAuthedToOperate(securityService.getAuthedUser())) {
+            throw new UnauthorizedException();
+        }
+
         try {
             Optional<User> user = userService.createUser(orgUserCreateRequest, userOrg.orElseThrow(), passwordEncoder);
             return ResponseEntity.ok(user);
@@ -153,5 +154,9 @@ public class AuthenticationController {
     public ResponseEntity<?> logout() throws InternalServerException, UnauthorizedException {
         refreshTokenService.deleteRefreshToken();
         return ResponseEntity.ok().build();
+    }
+
+    private boolean isAuthedToOperate(Optional<User> auth) {
+        return !auth.map(User::getRole).get().equals(UserRole.user);
     }
 }
