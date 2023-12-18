@@ -1,12 +1,16 @@
 package RaterTests.Controllers;
 
 import Rater.Controllers.OrgController;
+import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Org.Org;
+import Rater.Models.User.User;
+import Rater.Models.User.UserRole;
 import Rater.Repositories.OrgRepository;
 import Rater.Security.SecurityService;
 import Rater.Services.OrgService;
+import Rater.Services.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +31,19 @@ public class OrgControllerTest {
     @Mock
     private OrgService orgService;
     @Mock
+    private UserService userService;
+    @Mock
     private SecurityService securityService;
 
     @Before
     public void setup() throws InternalServerException, UnauthorizedException {
         Org org = new Org("TestOrg");
         org.setId(UUID.randomUUID());
+        User user = new User();
+        user.setRole(UserRole.owner);
+        user.setId(UUID.randomUUID());
         when(securityService.getAuthedOrg()).thenReturn(Optional.of(org));
+        when(securityService.getAuthedUser()).thenReturn(Optional.of(user));
     }
 
     @Test
@@ -56,7 +66,7 @@ public class OrgControllerTest {
     }
 
     @Test
-    public void testDeleteOrg() throws InternalServerException, UnauthorizedException {
+    public void testDeleteOrg() throws InternalServerException, UnauthorizedException, BadRequestException {
         orgController.deleteOrg();
         verify(orgService).deleteOrg(any());
     }

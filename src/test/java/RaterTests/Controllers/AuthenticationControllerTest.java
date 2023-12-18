@@ -151,7 +151,7 @@ public class AuthenticationControllerTest {
     public void testLogout() throws InternalServerException, UnauthorizedException {
         authenticationController.logout();
 
-        verify(refreshTokenService, times(1)).deleteRefreshToken();
+        verify(refreshTokenService, times(1)).deleteRefreshToken(Optional.empty());
     }
 
 }

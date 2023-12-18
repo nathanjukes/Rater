@@ -1,6 +1,7 @@
 package Rater.Services;
 
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.API.API;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.ServiceCreateRequest;
@@ -23,21 +24,19 @@ public class ServiceService {
     private static final Logger log = LogManager.getLogger(ServiceService.class);
 
     private final ServiceRepository serviceRepository;
-    private final AppService appService;
     private final UserService userService;
+    private final APIService apiService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ServiceService(ServiceRepository serviceRepository, AppService appService, UserService userService, PasswordEncoder passwordEncoder) {
+    public ServiceService(ServiceRepository serviceRepository, UserService userService, APIService apiService, PasswordEncoder passwordEncoder) {
         this.serviceRepository = serviceRepository;
-        this.appService = appService;
         this.userService = userService;
+        this.apiService = apiService;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<Rater.Models.Service.Service> createService(ServiceCreateRequest serviceCreateRequest, Org org) throws UnauthorizedException {
-        Optional<App> app = appService.getApp(serviceCreateRequest.getAppId());
-
+    public Optional<Rater.Models.Service.Service> createService(ServiceCreateRequest serviceCreateRequest, Optional<App> app, Org org) throws UnauthorizedException {
         if (app.isEmpty() || !app.map(App::getOrgId).get().equals(org.getId())) {
             log.info("Service Create Denied, Invalid App: " + serviceCreateRequest.toString());
             throw new UnauthorizedException();
@@ -68,7 +67,17 @@ public class ServiceService {
     }
 
     public void deleteService(UUID id, Org org) {
-        serviceRepository.deleteByIdAndOrgId(id, org.getId());
+        Optional<Rater.Models.Service.Service> service = getService(id);
+        serviceRepository.delete(service.orElseThrow());
+    }
+
+    public void deleteService(Rater.Models.Service.Service service) {
+        if (service.getApis() != null && !service.getApis().isEmpty()) {
+            for (API a : service.getApis()) {
+                apiService.deleteAPI(a);
+            }
+        }
+        serviceRepository.delete(service);
     }
 
     public void deleteServiceAccount(UUID id, Org org) {

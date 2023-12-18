@@ -94,9 +94,9 @@ public class AppServiceTest {
 
     @Test
     public void testAppDelete() {
-        appService.deleteApp(UUID.randomUUID());
+        appService.deleteApp(UUID.randomUUID(), testOrg);
 
-        verify(appRepository, times(1)).deleteById(any());
+        verify(appRepository, times(1)).delete(any());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class AppServiceTest {
         UUID appId = UUID.randomUUID();
         appService.deleteApp(appId, testOrg);
 
-        verify(appRepository, times(1)).deleteByIdAndOrgId(eq(appId), eq(testOrg.getId()));
+        verify(appRepository, times(1)).delete(any());
     }
 
     @Test

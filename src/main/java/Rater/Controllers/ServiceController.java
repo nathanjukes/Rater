@@ -2,11 +2,13 @@ package Rater.Controllers;
 
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Models.User.ServiceAccountCreateRequest;
 import Rater.Security.SecurityService;
+import Rater.Services.AppService;
 import Rater.Services.ServiceService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
@@ -28,11 +30,13 @@ public class ServiceController {
     private static final Logger log = LogManager.getLogger(ServiceController.class);
 
     private final ServiceService serviceService;
+    private final AppService appService;
     private final SecurityService securityService;
 
     @Autowired
-    public ServiceController(ServiceService serviceService, SecurityService securityService) {
+    public ServiceController(ServiceService serviceService, AppService appService, SecurityService securityService) {
         this.serviceService = serviceService;
+        this.appService = appService;
         this.securityService = securityService;
     }
 
@@ -44,7 +48,8 @@ public class ServiceController {
 
         log.info("Service Create Request: " + serviceCreateRequest);
 
-        Optional<Service> service = serviceService.createService(serviceCreateRequest, org.orElseThrow());
+        Optional<App> app = appService.getApp(serviceCreateRequest.getAppId());
+        Optional<Service> service = serviceService.createService(serviceCreateRequest, app, org.orElseThrow());
 
         if (service.isPresent()) {
             serviceService.createServiceAccount(new ServiceAccountCreateRequest(service.map(Service::getId).orElseThrow()), org.orElseThrow());

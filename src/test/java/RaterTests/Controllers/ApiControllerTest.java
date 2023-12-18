@@ -11,6 +11,7 @@ import Rater.Models.Org.Org;
 import Rater.Models.Service.Service;
 import Rater.Security.SecurityService;
 import Rater.Services.APIService;
+import Rater.Services.ServiceService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,8 @@ public class ApiControllerTest {
     @Mock
     private APIService apiService;
     @Mock
+    private ServiceService serviceService;
+    @Mock
     private SecurityService securityService;
 
     private Org testOrg;
@@ -48,6 +51,7 @@ public class ApiControllerTest {
         testService = new Service("testService", testApp, testOrg);
         testService.setId(UUID.randomUUID());
         when(securityService.getAuthedOrg()).thenReturn(Optional.of(testOrg));
+        when(serviceService.getService(any())).thenReturn(Optional.of(testService));
     }
 
     @Test
@@ -56,7 +60,7 @@ public class ApiControllerTest {
 
         apiController.createAPI(apiCreateRequest);
 
-        verify(apiService).createAPI(apiCreateRequest, testOrg);
+        verify(apiService).createAPI(apiCreateRequest, testService, testOrg);
     }
 
     @Test

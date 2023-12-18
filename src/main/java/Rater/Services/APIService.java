@@ -3,6 +3,7 @@ package Rater.Services;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.*;
 import Rater.Models.Org.Org;
+import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Repositories.APIRepository;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
@@ -20,12 +21,12 @@ public class APIService {
     private static final Logger log = LogManager.getLogger(APIService.class);
 
     private final APIRepository apiRepository;
-    private final ServiceService serviceService;
+    private final APIRuleService apiRuleService;
 
     @Autowired
-    public APIService(APIRepository apiRepository, ServiceService serviceService) {
+    public APIService(APIRepository apiRepository, APIRuleService apiRuleService) {
         this.apiRepository = apiRepository;
-        this.serviceService = serviceService;
+        this.apiRuleService = apiRuleService;
     }
 
     public Optional<API> getAPI(UUID id) {
@@ -47,15 +48,8 @@ public class APIService {
         return apiRepository.findByOrgId(orgId);
     }
 
-    public Optional<API> createAPI(APICreateRequest apiCreateRequest, Org org) throws UnauthorizedException {
-        Optional<Rater.Models.Service.Service> service = serviceService.getService(apiCreateRequest.getServiceId());
-
-        if (service.isEmpty() || !service.map(s -> s.getOrgId()).get().equals(org.getId())) {
-            log.info("API Create Denied, Invalid Service: " + apiCreateRequest.toString());
-            throw new UnauthorizedException();
-        }
-
-        API api = new API(apiCreateRequest.getName(), apiCreateRequest.getBasicLimit(), service.orElseThrow(), apiCreateRequest.getHttpMethod(), org);
+    public Optional<API> createAPI(APICreateRequest apiCreateRequest, Rater.Models.Service.Service service, Org org) {
+        API api = new API(apiCreateRequest.getName(), apiCreateRequest.getBasicLimit(), service, apiCreateRequest.getHttpMethod(), org);
         return Optional.of(apiRepository.save(api));
     }
 
@@ -71,6 +65,24 @@ public class APIService {
     }
 
     public void deleteAPI(UUID id, Org org) {
-        apiRepository.deleteByIdAndOrgId(id, org.getId());
+        Optional<API> api = getAPI(id);
+        apiRepository.delete(api.orElseThrow());
+    }
+
+    public void deleteAPI(API api) {
+        deleteRules(api);
+        apiRepository.delete(api);
+    }
+
+    private void deleteRules(API api) {
+        for (var i : api.getIdRules()) {
+            apiRuleService.deleteRule(i);
+        }
+        for (var i : api.getIpRules()) {
+            apiRuleService.deleteRule(i);
+        }
+        for (var i : api.getRoleRules()) {
+            apiRuleService.deleteRule(i);
+        }
     }
 }

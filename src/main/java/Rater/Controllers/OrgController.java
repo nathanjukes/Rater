@@ -6,8 +6,11 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgCreateRequest;
+import Rater.Models.User.User;
+import Rater.Models.User.UserRole;
 import Rater.Security.SecurityService;
 import Rater.Services.OrgService;
+import Rater.Services.UserService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,11 +32,13 @@ public class OrgController {
     private static final Logger log = LogManager.getLogger(OrgController.class);
 
     private final OrgService orgService;
+    private final UserService userService;
     private final SecurityService securityService;
 
     @Autowired
-    public OrgController(OrgService orgService, SecurityService securityService) {
+    public OrgController(OrgService orgService, UserService userService, SecurityService securityService) {
         this.orgService = orgService;
+        this.userService = userService;
         this.securityService = securityService;
     }
 
@@ -66,14 +71,19 @@ public class OrgController {
     }
 
     @RequestMapping(value = "", method = DELETE)
-    public ResponseEntity<?> deleteOrg() throws InternalServerException, UnauthorizedException {
+    public ResponseEntity<?> deleteOrg() throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
+        if (!securityService.getAuthedUser().map(User::getRole).orElseThrow().equals(UserRole.owner)) {
+            throw new UnauthorizedException();
+        }
+
         log.info("Delete Org Request: " + org.map(Org::getId).get());
 
+        userService.deleteUser(securityService.getAuthedUser().orElseThrow().getId(), org.orElseThrow(), true);
         orgService.deleteOrg(org.map(Org::getId).orElseThrow(UnauthorizedException::new));
 
-        return ResponseEntity.ok("Deleted: " + org.map(u -> u.getName()).orElseThrow(UnauthorizedException::new));
+        return ResponseEntity.ok("");
     }
 }

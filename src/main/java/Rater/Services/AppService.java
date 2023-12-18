@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,12 +21,12 @@ public class AppService {
     private static final Logger log = LogManager.getLogger(AppService.class);
 
     private final AppRepository appRepository;
-    private final OrgService orgService;
+    private final ServiceService serviceService;
 
     @Autowired
-    public AppService(AppRepository appRepository, OrgService orgService) {
+    public AppService(AppRepository appRepository, ServiceService serviceService) {
         this.appRepository = appRepository;
-        this.orgService = orgService;
+        this.serviceService = serviceService;
     }
 
     public Optional<App> createApp(AppCreateRequest appCreateRequest, Org org) {
@@ -44,11 +45,17 @@ public class AppService {
         return appRepository.findById(id);
     }
 
-    public void deleteApp(UUID id) {
-        appRepository.deleteById(id);
+    public void deleteApp(UUID appId, Org org) {
+        Optional<App> app = getApp(appId);
+        deleteApp(app.orElseThrow());
     }
 
-    public void deleteApp(UUID appId, Org org) {
-        appRepository.deleteByIdAndOrgId(appId, org.getId());
+    public void deleteApp(App app) {
+        if (app.getServices() != null && !app.getServices().isEmpty()) {
+            for (Rater.Models.Service.Service s : app.getServices()) {
+                serviceService.deleteService(s);
+            }
+        }
+        appRepository.delete(app);
     }
 }

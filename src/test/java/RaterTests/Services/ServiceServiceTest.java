@@ -69,9 +69,8 @@ public class ServiceServiceTest {
         Rater.Models.Service.Service service = new Rater.Models.Service.Service("TestingService", testApp, testOrg);
 
         when(serviceRepository.save(any())).thenReturn(service);
-        when(appService.getApp(any())).thenReturn(Optional.ofNullable(testApp));
 
-        Optional<Service> result = serviceService.createService(request, testOrg);
+        Optional<Service> result = serviceService.createService(request, Optional.ofNullable(testApp), testOrg);
 
         assertTrue(result.isPresent());
         assertEquals("TestingService", result.get().getName());
@@ -85,7 +84,7 @@ public class ServiceServiceTest {
         Service service = new Service("Testservice", testApp, testOrg);
 
         try {
-            serviceService.createService(request, testOrg);
+            serviceService.createService(request, null, testOrg);
             fail("Expected InternalServerException");
         } catch (Exception e) {
             // passed
@@ -97,12 +96,11 @@ public class ServiceServiceTest {
     @Test
     public void testCreateServiceAppDoesNotExist() {
         UUID appId = UUID.randomUUID();
-        doReturn(Optional.empty()).when(appService).getApp(appId);
         ServiceCreateRequest request = new ServiceCreateRequest("Testservice", appId);
         Service service = new Service("Testservice", testApp, testOrg);
 
         try {
-            serviceService.createService(request, testOrg);
+            serviceService.createService(request, null, testOrg);
             fail("Expected UnauthorizedException");
         } catch (Exception e) {
             // passed
@@ -116,13 +114,12 @@ public class ServiceServiceTest {
         UUID appId = UUID.randomUUID();
         App testApp2 = testApp;
         testApp2.setOrg(new Org("Test"));
-        doReturn(Optional.empty()).when(appService).getApp(appId);
 
         ServiceCreateRequest request = new ServiceCreateRequest("Testservice", appId);
         Service service = new Service("Testservice", testApp, testOrg);
 
         try {
-            serviceService.createService(request, testOrg);
+            serviceService.createService(request, Optional.ofNullable(testApp), testOrg);
             fail("Expected UnauthorizedException");
         } catch (Exception e) {
             // passed
@@ -135,7 +132,7 @@ public class ServiceServiceTest {
     public void testServiceDelete() {
         serviceService.deleteService(UUID.randomUUID(), testOrg);
 
-        verify(serviceRepository, times(1)).deleteByIdAndOrgId(any(), any());
+        verify(serviceRepository, times(1)).delete(any());
     }
 
     @Test

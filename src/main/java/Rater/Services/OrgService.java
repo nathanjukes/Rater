@@ -3,6 +3,7 @@ package Rater.Services;
 import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.DataConflictException;
 import Rater.Exceptions.InternalServerException;
+import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgCreateRequest;
 import Rater.Repositories.OrgRepository;
@@ -14,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,10 +26,12 @@ public class OrgService {
     private static final Logger log = LogManager.getLogger(OrgService.class);
 
     private OrgRepository orgRepository;
+    private AppService appService;
 
     @Autowired
-    public OrgService(OrgRepository orgRepository) {
+    public OrgService(OrgRepository orgRepository, AppService appService) {
         this.orgRepository = orgRepository;
+        this.appService = appService;
     }
 
     public Optional<Org> createOrg(OrgCreateRequest orgCreateRequest) throws InternalServerException, DataConflictException {
@@ -58,6 +62,10 @@ public class OrgService {
     }
 
     public void deleteOrg(UUID orgId) {
+        Optional<Org> org = getOrg(orgId);
+        for (App a : org.map(Org::getApps).orElse(Collections.emptySet())) {
+            appService.deleteApp(a);
+        }
         orgRepository.deleteById(orgId);
     }
 }

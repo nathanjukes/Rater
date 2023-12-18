@@ -2,10 +2,12 @@ package Rater.Controllers;
 
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.API.API;
 import Rater.Models.API.Rules.*;
 import Rater.Models.Org.Org;
 import Rater.Security.SecurityService;
 import Rater.Services.APIRuleService;
+import Rater.Services.APIService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,11 +29,13 @@ public class APIRuleController {
     private static final Logger log = LogManager.getLogger(APIRuleController.class);
 
     private final APIRuleService apiRuleService;
+    private final APIService apiService;
     private final SecurityService securityService;
 
     @Autowired
-    public APIRuleController(APIRuleService apiRuleService, SecurityService securityService) {
+    public APIRuleController(APIRuleService apiRuleService, APIService apiService, SecurityService securityService) {
         this.apiRuleService = apiRuleService;
+        this.apiService = apiService;
         this.securityService = securityService;
     }
 
@@ -43,7 +47,8 @@ public class APIRuleController {
 
         log.info("Create API Rule Request: " + ruleCreateRequest.toString());
 
-        return ResponseEntity.ok(apiRuleService.createAPIRule(ruleCreateRequest, org.orElseThrow()));
+        Optional<API> api = apiService.getAPI(ruleCreateRequest.getApiId());
+        return ResponseEntity.ok(apiRuleService.createAPIRule(ruleCreateRequest, api.orElseThrow(), org.orElseThrow()));
     }
 
     @CrossOrigin
@@ -54,7 +59,8 @@ public class APIRuleController {
 
         log.info("Get Rule Request: " + ruleGetRequest.toString());
 
-        return ResponseEntity.ok(apiRuleService.getRule(ruleGetRequest, org.orElseThrow()));
+        Optional<API> api = apiService.getAPI(ruleGetRequest.getApiId());
+        return ResponseEntity.ok(apiRuleService.getRule(ruleGetRequest, api.orElseThrow(), org.orElseThrow()));
     }
 
     @RequestMapping(value = "/search", method = POST)
@@ -64,6 +70,18 @@ public class APIRuleController {
 
         log.info("Search Rule Request: " + ruleSearchRequest.toString());
 
-        return ResponseEntity.ok(apiRuleService.searchRule(ruleSearchRequest, org.orElseThrow()));
+        // Should be in service but circular dependency was an issue
+        RuleSearchQuery ruleSearchQuery = RuleSearchQuery.from(ruleSearchRequest);
+
+        // Get API first
+        Optional<API> api = apiService.searchAPI(
+                ruleSearchQuery.getApiName(),
+                ruleSearchQuery.getFullApi(),
+                ruleSearchQuery.getHttpMethod(),
+                ruleSearchQuery.getServiceId(),
+                org.orElseThrow()
+        );
+
+        return ResponseEntity.ok(apiRuleService.searchRule(ruleSearchRequest, ruleSearchQuery, api.orElseThrow(), org.orElseThrow()));
     }
 }

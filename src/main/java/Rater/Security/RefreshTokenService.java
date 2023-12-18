@@ -16,14 +16,12 @@ import java.util.UUID;
 @Service
 @Transactional
 public class RefreshTokenService {
-    private final SecurityService securityService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final int EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 Hours in MS
 
     @Autowired
-    public RefreshTokenService(SecurityService securityService, RefreshTokenRepository refreshTokenRepository) {
-        this.securityService = securityService;
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
@@ -35,11 +33,6 @@ public class RefreshTokenService {
         );
 
         return saveToken(refreshToken);
-    }
-
-    public RefreshToken createRefreshToken() throws InternalServerException, UnauthorizedException {
-        Optional<User> userOpt = securityService.getAuthedUser();
-        return createRefreshToken(userOpt);
     }
 
     private RefreshToken saveToken(RefreshToken refreshToken) {
@@ -58,8 +51,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByRefreshToken(refreshToken);
     }
 
-    public void deleteRefreshToken() throws InternalServerException, UnauthorizedException {
-        Optional<User> userOpt = securityService.getAuthedUser();
+    public void deleteRefreshToken(Optional<User> userOpt) throws InternalServerException, UnauthorizedException {
         refreshTokenRepository.deleteByUserId(userOpt.map(User::getId).orElseThrow());
     }
 

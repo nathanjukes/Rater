@@ -73,15 +73,7 @@ public class UserController {
         }
 
         // Can only delete user accounts
-        Optional<User> user = userService.getUser(id);
-        if (user.map(User::getRole).orElseThrow().equals(UserRole.user)) {
-            refreshTokenService.deleteRefreshToken(id);
-        } else {
-            log.info("Error deleting user {} - role is not user", id);
-            throw new BadRequestException();
-        }
-
-        if (userService.deleteUser(id, org.orElseThrow()) != 1) {
+        if (userService.deleteUser(id, org.orElseThrow(), false) != 1) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok("");

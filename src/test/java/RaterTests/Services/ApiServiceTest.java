@@ -86,7 +86,7 @@ public class ApiServiceTest {
         when(apiRepository.save(any())).thenReturn(api);
         when(serviceService.getService(any())).thenReturn(Optional.ofNullable(testService));
 
-        Optional<API> result = apiService.createAPI(request, testOrg);
+        Optional<API> result = apiService.createAPI(request, testService, testOrg);
 
         assertTrue(result.isPresent());
         assertEquals("Testingapi", result.get().getName());
@@ -102,7 +102,7 @@ public class ApiServiceTest {
         when(apiRepository.save(any())).thenThrow(new RuntimeException("something bad"));
 
         try {
-            apiService.createAPI(request, testOrg);
+            apiService.createAPI(request, testService, testOrg);
             fail("Expected InternalServerException");
         } catch (Exception e) {
             // passed
@@ -115,7 +115,7 @@ public class ApiServiceTest {
     public void testAPIDelete() {
         apiService.deleteAPI(UUID.randomUUID(), testOrg);
 
-        verify(apiRepository, times(1)).deleteByIdAndOrgId(any(), any());
+        verify(apiRepository, times(1)).delete(any());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class ApiServiceTest {
         UUID apiId = UUID.randomUUID();
         apiService.deleteAPI(apiId, testOrg);
 
-        verify(apiRepository, times(1)).deleteByIdAndOrgId(eq(apiId), eq(testOrg.getId()));
+        verify(apiRepository, times(1)).delete(any());
     }
 
     @Test

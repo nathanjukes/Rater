@@ -78,7 +78,7 @@ public class ApiRuleServiceTest {
         when(apiService.getAPI(ruleCreateRequest.getApiId())).thenReturn(Optional.of(testApi));
         when(idRuleRepository.save(any())).thenReturn(IdRule.from(ruleCreateRequest, testApi));
 
-        apiRuleService.createAPIRule(ruleCreateRequest, testOrg);
+        apiRuleService.createAPIRule(ruleCreateRequest, testApi, testOrg);
 
         verify(idRuleRepository, times(1)).save(any());
     }
@@ -90,7 +90,7 @@ public class ApiRuleServiceTest {
         when(apiService.getAPI(ruleCreateRequest.getApiId())).thenReturn(Optional.empty());
 
         try {
-            apiRuleService.createAPIRule(ruleCreateRequest, null);
+            apiRuleService.createAPIRule(ruleCreateRequest, null, null);
             fail();
         } catch (Exception e) {
             // passed
@@ -105,7 +105,7 @@ public class ApiRuleServiceTest {
 
         when(apiService.getAPI(ruleGetRequest.getApiId())).thenReturn(Optional.of(testApi));
 
-        apiRuleService.getRule(ruleGetRequest, testOrg);
+        apiRuleService.getRule(ruleGetRequest, testApi, testOrg);
 
         verify(idRuleRepository, times(1)).findByUserIdAndApiId(any(), any());
     }
@@ -118,7 +118,7 @@ public class ApiRuleServiceTest {
 
         when(apiService.getAPI(ruleGetRequest.getApiId())).thenReturn(Optional.of(testApi));
 
-        apiRuleService.getRule(ruleGetRequest, testOrg);
+        apiRuleService.getRule(ruleGetRequest, testApi, testOrg);
 
         verify(ipRuleRepository, times(1)).findByUserIpAndApiId(any(), any());
     }
@@ -131,7 +131,7 @@ public class ApiRuleServiceTest {
 
         when(apiService.getAPI(ruleGetRequest.getApiId())).thenReturn(Optional.of(testApi));
 
-        apiRuleService.getRule(ruleGetRequest, testOrg);
+        apiRuleService.getRule(ruleGetRequest, testApi, testOrg);
 
         verify(roleRuleRepository, times(1)).findByRoleAndApiId(any(), any());
     }
@@ -143,7 +143,7 @@ public class ApiRuleServiceTest {
         testApi.setId(UUID.randomUUID());
 
         when(apiService.searchAPI(eq("users"), eq("users"), eq(HttpMethod.GET), eq(ruleSearchRequest.getServiceId()), eq(testOrg))).thenReturn(Optional.of(testApi));
-        apiRuleService.searchRule(ruleSearchRequest, testOrg);
+        apiRuleService.searchRule(ruleSearchRequest, RuleSearchQuery.from(ruleSearchRequest), testApi, testOrg);
 
         verify(ipRuleRepository, times(1)).findByUserIpAndApiId(any(), any());
     }

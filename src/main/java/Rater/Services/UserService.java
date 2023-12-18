@@ -1,10 +1,16 @@
 package Rater.Services;
 
+import Rater.Controllers.OrgController;
 import Rater.Exceptions.BadRequestException;
+import Rater.Exceptions.InternalServerException;
+import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Org.Org;
 import Rater.Models.User.*;
 import Rater.Repositories.UserRepository;
+import Rater.Security.RefreshTokenService;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,11 +24,15 @@ import static Rater.Models.User.UserRole.owner;
 @Service
 @Transactional
 public class UserService {
+    private static final Logger log = LogManager.getLogger(UserService.class);
+
     private UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public Optional<User> getUser(UUID userId) {
@@ -55,7 +65,15 @@ public class UserService {
         return Optional.ofNullable(userRepository.save(user));
     }
 
-    public int deleteUser(UUID id, Org org) {
+    public int deleteUser(UUID id, Org org, boolean orgDelete) throws BadRequestException, InternalServerException, UnauthorizedException {
+        Optional<User> user = getUser(id);
+        if (user.map(User::getRole).orElseThrow().equals(UserRole.user) || orgDelete) {
+            refreshTokenService.deleteRefreshToken(id);
+        } else {
+            log.info("Error deleting user {} - role is not user", id);
+            throw new BadRequestException();
+        }
+
         return userRepository.deleteById(id, org.getId());
     }
 

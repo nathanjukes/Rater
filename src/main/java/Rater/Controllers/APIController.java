@@ -5,8 +5,10 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.*;
 import Rater.Models.Org.Org;
+import Rater.Models.Service.Service;
 import Rater.Security.SecurityService;
 import Rater.Services.APIService;
+import Rater.Services.ServiceService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,11 +29,13 @@ public class APIController {
     private static final Logger log = LogManager.getLogger(APIController.class);
 
     private final APIService apiService;
+    private final ServiceService serviceService;
     private final SecurityService securityService;
 
     @Autowired
-    public APIController(APIService apiService, SecurityService securityService) {
+    public APIController(APIService apiService, ServiceService service, SecurityService securityService) {
         this.apiService = apiService;
+        this.serviceService = service;
         this.securityService = securityService;
     }
 
@@ -43,7 +47,13 @@ public class APIController {
 
         log.info("Create API Request: ", apiCreateRequest.toString());
 
-        return ResponseEntity.ok(apiService.createAPI(apiCreateRequest, org.orElseThrow()));
+        Optional<Service> service = serviceService.getService(apiCreateRequest.getServiceId());
+        if (service.isEmpty() || !service.map(s -> s.getOrgId()).get().equals(org.orElseThrow().getId())) {
+            log.info("API Create Denied, Invalid Service: " + apiCreateRequest.toString());
+            throw new UnauthorizedException();
+        }
+
+        return ResponseEntity.ok(apiService.createAPI(apiCreateRequest, service.orElseThrow(), org.orElseThrow()));
     }
 
     @CrossOrigin

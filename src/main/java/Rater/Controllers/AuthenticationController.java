@@ -127,9 +127,9 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(auth);
         TokenResponse jwt = jwtUtil.generateTokenResponse(auth);
 
-        refreshTokenService.deleteRefreshToken();
+        refreshTokenService.deleteRefreshToken(securityService.getAuthedUser());
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken();
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(securityService.getAuthedUser());
         jwt.setRefreshToken(refreshToken.getToken().toString());
 
         return ResponseEntity.ok(jwt);
@@ -152,7 +152,7 @@ public class AuthenticationController {
     @CrossOrigin
     @RequestMapping(value = "/logout", method = POST)
     public ResponseEntity<?> logout() throws InternalServerException, UnauthorizedException {
-        refreshTokenService.deleteRefreshToken();
+        refreshTokenService.deleteRefreshToken(securityService.getAuthedUser());
         return ResponseEntity.ok().build();
     }
 

@@ -8,6 +8,7 @@ import Rater.Models.Service.Service;
 import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Models.Org.Org;
 import Rater.Security.SecurityService;
+import Rater.Services.AppService;
 import Rater.Services.ServiceService;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.*;
 public class ServiceControllerTest {
     @InjectMocks
     private ServiceController serviceController;
+    @Mock
+    private AppService appService;
     @Mock
     private ServiceService serviceService;
     @Mock
@@ -50,7 +53,7 @@ public class ServiceControllerTest {
 
         serviceController.createService(serviceCreateRequest);
 
-        verify(serviceService).createService(serviceCreateRequest, testOrg);
+        verify(serviceService).createService(eq(serviceCreateRequest), any(), eq(testOrg));
     }
 
     @Test
