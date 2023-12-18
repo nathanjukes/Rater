@@ -87,6 +87,7 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/{id}", method = PUT)
     public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest updateRequest) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
