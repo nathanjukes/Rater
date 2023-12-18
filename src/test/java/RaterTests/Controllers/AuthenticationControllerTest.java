@@ -14,6 +14,7 @@ import Rater.Models.Org.OrgCreateRequest;
 import Rater.Models.User.OrgUserCreateRequest;
 import Rater.Models.User.User;
 import Rater.Models.User.UserCreateRequest;
+import Rater.Models.User.UserRole;
 import Rater.Security.JwtUtil;
 import Rater.Security.RefreshTokenService;
 import Rater.Security.SecurityService;
@@ -74,7 +75,7 @@ public class AuthenticationControllerTest {
         RefreshToken refreshToken = spy(RefreshToken.class);
 
         when(orgService.createOrg(any())).thenReturn(Optional.of(testOrg));
-        when(userService.createUser(any(UserCreateRequest.class), any(), any())).thenReturn(Optional.of(new User("test", "password", testOrg)));
+        when(userService.createUser(any(UserCreateRequest.class), any(), any())).thenReturn(Optional.of(new User("test", "password", testOrg, UserRole.user)));
         when(jwtUtil.generateTokenResponse(anyString())).thenReturn(new TokenResponse("test", Date.from(Instant.now())));
         when(refreshTokenService.createRefreshToken(any())).thenReturn(refreshToken);
         when(refreshToken.getToken()).thenReturn(UUID.randomUUID());

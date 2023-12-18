@@ -22,4 +22,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Transactional
     @Query(value = "DELETE FROM users WHERE email = ?1", nativeQuery = true)
     void deleteByEmail(String email);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM users WHERE id = ?1 AND org_id = ?2 AND role = 'user'", nativeQuery = true)
+    int deleteById(UUID id, UUID orgId);
 }

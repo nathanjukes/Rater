@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 
 import java.util.UUID;
 
+import static Rater.Models.User.UserRole.*;
+
 @Entity
 @Table(name = "users", uniqueConstraints=@UniqueConstraint(columnNames = {"email"}))
 public class User {
@@ -23,10 +25,14 @@ public class User {
     @JoinColumn(name="org_id")//, nullable=false)
     private Org org;
 
-    public User(String email, String password, Org org) {
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    public User(String email, String password, Org org, UserRole role) {
         this.email = email;
         this.password = password;
         this.org = org;
+        this.role = role;
     }
 
     public User() {
@@ -70,15 +76,23 @@ public class User {
         return org.getId();
     }
 
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
     public static User from(UserCreateRequest userCreateRequest, Org org) {
-        return new User(userCreateRequest.getEmail(), userCreateRequest.getPassword(), org);
+        return new User(userCreateRequest.getEmail(), userCreateRequest.getPassword(), org, owner);
     }
 
     public static User from(OrgUserCreateRequest userCreateRequest, Org org) {
-        return new User(userCreateRequest.getEmail(), userCreateRequest.getPassword(), org);
+        return new User(userCreateRequest.getEmail(), userCreateRequest.getPassword(), org, user);
     }
 
     public static User from(ServiceAccountCreateRequest serviceAccountCreateRequest, Org org) {
-        return new User(serviceAccountCreateRequest.getServiceId().toString(), serviceAccountCreateRequest.getPassword(), org);
+        return new User(serviceAccountCreateRequest.getServiceId().toString(), serviceAccountCreateRequest.getPassword(), org, owner);
     }
 }

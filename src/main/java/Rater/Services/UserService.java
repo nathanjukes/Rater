@@ -1,10 +1,8 @@
 package Rater.Services;
 
+import Rater.Exceptions.BadRequestException;
 import Rater.Models.Org.Org;
-import Rater.Models.User.OrgUserCreateRequest;
-import Rater.Models.User.ServiceAccountCreateRequest;
-import Rater.Models.User.User;
-import Rater.Models.User.UserCreateRequest;
+import Rater.Models.User.*;
 import Rater.Repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static Rater.Models.User.UserRole.owner;
 
 @Service
 @Transactional
@@ -55,11 +55,29 @@ public class UserService {
         return Optional.ofNullable(userRepository.save(user));
     }
 
-    public void deleteUser(UUID id, Org org) {
-        userRepository.deleteById(id);
+    public int deleteUser(UUID id, Org org) {
+        return userRepository.deleteById(id, org.getId());
     }
 
     public void deleteUser(String email, Org org) {
         userRepository.deleteByEmail(email);
+    }
+
+    public Optional<User> updateUser(UUID id, UserUpdateRequest userUpdateRequest, Org org) throws BadRequestException {
+        if (userUpdateRequest.getRole() == null || userUpdateRequest.getRole().equals(owner)) {
+            throw new BadRequestException();
+        }
+
+        Optional<User> user = getUser(id);
+        if (user.map(User::getRole).orElseThrow().equals(owner)) {
+            throw new BadRequestException();
+        }
+
+        if (user.isPresent()) {
+            user.get().setRole(userUpdateRequest.getRole());
+            return Optional.of(userRepository.save(user.get()));
+        }
+
+        return Optional.empty();
     }
 }

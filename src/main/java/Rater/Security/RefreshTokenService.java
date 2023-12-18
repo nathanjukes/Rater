@@ -62,4 +62,8 @@ public class RefreshTokenService {
         Optional<User> userOpt = securityService.getAuthedUser();
         refreshTokenRepository.deleteByUserId(userOpt.map(User::getId).orElseThrow());
     }
+
+    public void deleteRefreshToken(UUID id) throws InternalServerException, UnauthorizedException {
+        refreshTokenRepository.deleteByUserId(id);
+    }
 }
