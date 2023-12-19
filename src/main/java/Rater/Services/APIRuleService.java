@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -100,5 +101,11 @@ public class APIRuleService {
 
     public void deleteRule(RoleRule r) {
         roleRuleRepository.delete(r);
+    }
+
+    public void tryDeleteRule(UUID id) {
+        idRuleRepository.deleteById(id);
+        ipRuleRepository.deleteById(id);
+        roleRuleRepository.deleteById(id);
     }
 }

@@ -13,14 +13,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static Rater.Security.SecurityService.throwIfNoAuth;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -83,5 +82,16 @@ public class APIRuleController {
         );
 
         return ResponseEntity.ok(apiRuleService.searchRule(ruleSearchRequest, ruleSearchQuery, api.orElseThrow(), org.orElseThrow()));
+    }
+
+    @RequestMapping(value = "/{id}", method = DELETE)
+    public ResponseEntity<?> deleteApiRule(@PathVariable UUID id) throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        log.info("Delete Rule Request, id: {} ", id);
+
+        apiRuleService.tryDeleteRule(id);
+        return ResponseEntity.ok("");
     }
 }
