@@ -2,6 +2,7 @@ package Rater.Services;
 
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.API.*;
+import Rater.Models.API.Rules.Rule;
 import Rater.Models.Org.Org;
 import Rater.Models.Service.ServiceCreateRequest;
 import Rater.Repositories.APIRepository;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Service
 @Transactional
@@ -66,7 +69,7 @@ public class APIService {
 
     public void deleteAPI(UUID id, Org org) {
         Optional<API> api = getAPI(id);
-        apiRepository.delete(api.orElseThrow());
+        deleteAPI(api.orElseThrow());
     }
 
     public void deleteAPI(API api) {
@@ -75,14 +78,14 @@ public class APIService {
     }
 
     private void deleteRules(API api) {
-        for (var i : api.getIdRules()) {
-            apiRuleService.deleteRule(i);
-        }
-        for (var i : api.getIpRules()) {
-            apiRuleService.deleteRule(i);
-        }
-        for (var i : api.getRoleRules()) {
-            apiRuleService.deleteRule(i);
-        }
+        Optional.ofNullable(api)
+                .map(API::getIdRules)
+                .ifPresent(rules -> rules.forEach(r -> apiRuleService.deleteRule(r)));
+        Optional.ofNullable(api)
+                .map(API::getIpRules)
+                .ifPresent(rules -> rules.forEach(r -> apiRuleService.deleteRule(r)));
+        Optional.ofNullable(api)
+                .map(API::getRoleRules)
+                .ifPresent(rules -> rules.forEach(r -> apiRuleService.deleteRule(r)));
     }
 }

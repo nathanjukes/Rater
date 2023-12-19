@@ -94,7 +94,6 @@ public class ServiceController {
             return ResponseEntity.notFound().build();
         }
         serviceService.deleteService(serviceId, org.get());
-        serviceService.deleteServiceAccount(serviceId, org.get());
 
         return ResponseEntity.ok("Deleted: " + org.map(o -> o.getName()).orElseThrow() + "/" + serviceId);
     }

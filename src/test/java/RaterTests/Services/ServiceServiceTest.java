@@ -7,6 +7,7 @@ import Rater.Models.Org.Org;
 import Rater.Repositories.ServiceRepository;
 import Rater.Services.AppService;
 import Rater.Services.ServiceService;
+import Rater.Services.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,8 @@ public class ServiceServiceTest {
     private ServiceRepository serviceRepository;
     @Mock
     private AppService appService;
+    @Mock
+    private UserService userService;
 
     private Org testOrg;
     private App testApp;

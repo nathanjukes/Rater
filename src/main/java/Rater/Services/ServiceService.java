@@ -68,7 +68,8 @@ public class ServiceService {
 
     public void deleteService(UUID id, Org org) {
         Optional<Rater.Models.Service.Service> service = getService(id);
-        serviceRepository.delete(service.orElseThrow());
+        deleteService(service.orElseThrow());
+        deleteServiceAccount(id, org);
     }
 
     public void deleteService(Rater.Models.Service.Service service) {
