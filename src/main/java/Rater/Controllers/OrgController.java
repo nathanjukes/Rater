@@ -70,6 +70,7 @@ public class OrgController {
         return ResponseEntity.ok(securityService.getAuthedOrg());
     }
 
+    @CrossOrigin
     @RequestMapping(value = "", method = DELETE)
     public ResponseEntity<?> deleteOrg() throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
