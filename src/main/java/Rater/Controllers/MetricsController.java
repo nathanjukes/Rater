@@ -5,6 +5,7 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Metrics.ApiMetric;
 import Rater.Models.Metrics.OrgMetric;
+import Rater.Models.Metrics.UserUsageMetric;
 import Rater.Models.Org.Org;
 import Rater.Security.SecurityService;
 import Rater.Services.MetricsService;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,5 +54,14 @@ public class MetricsController {
         throwIfNoAuth(org);
 
         return ResponseEntity.ok(metricsService.getOrgMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), startTime, endTime));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/users", method = GET)
+    public ResponseEntity<List<UserUsageMetric>> getUserMetrics(@RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        return ResponseEntity.ok(metricsService.getUserUsageMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), startTime, endTime));
     }
 }

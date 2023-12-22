@@ -39,6 +39,13 @@ public class APIService {
         return apiRepository.findById(id);
     }
 
+    public Optional<API> getAPI(UUID id, UUID orgId) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        return apiRepository.findByApiIdOrgId(id, orgId);
+    }
+
     public Optional<List<API>> getAPIs(UUID orgId, UUID appId, UUID serviceId) {
         if (appId != null && serviceId != null) {
             return apiRepository.findByOrgId(orgId, appId, serviceId);

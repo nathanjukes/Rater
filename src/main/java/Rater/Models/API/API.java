@@ -147,4 +147,8 @@ public class API implements BuildComponent {
     public BaseRule getBaseRule() {
         return new BaseRule(basicLimit);
     }
+
+    public String getDisplayName() {
+        return getHttpMethod() + ": /" + getName();
+    }
 }
