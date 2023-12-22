@@ -1,12 +1,11 @@
 package Rater.Services;
 
-import Rater.Controllers.MetricsController;
 import Rater.Exceptions.BadRequestException;
 import Rater.Models.API.API;
 import Rater.Models.Metrics.ApiMetric;
 import Rater.Models.Metrics.OrgMetric;
+import Rater.Models.Metrics.UserRequestMetric;
 import Rater.Models.Metrics.UserUsageMetric;
-import Rater.Models.User.User;
 import Rater.Repositories.MetricsRepository;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
@@ -69,7 +68,7 @@ public class MetricsService {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;
         if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
-            log.info("Get Org Metrics Request Denied, bad time inputs: {} {}", lowerBound, upperBound);
+            log.info("Get user usage metrics request denied, bad time inputs: {} {}", lowerBound, upperBound);
             throw new BadRequestException();
         }
 
@@ -78,6 +77,21 @@ public class MetricsService {
 
         List<Object[]> userUsageMetrics = metricsRepository.getUserUsageMetrics(orgId);
         return collectUserUsageMetrics(userUsageMetrics, orgId);
+    }
+
+    public List<UserRequestMetric> getUserRequestMetrics(String userData, UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
+        lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
+        upperBound = upperBound == null ? Instant.now() : upperBound;
+        if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
+            log.info("Get user request metric denied, bad time inputs: {} {}", lowerBound, upperBound);
+            throw new BadRequestException();
+        }
+
+        Date lb = Date.from(lowerBound);
+        Date ub = Date.from(upperBound);
+
+        List<Object[]> userRequestMetrics = metricsRepository.getUserMetrics(userData, orgId);
+        return collectUserRequestMetrics(userRequestMetrics, orgId);
     }
 
     private List<UserUsageMetric> collectUserUsageMetrics(List<Object[]> userData, UUID orgId) {
@@ -101,5 +115,18 @@ public class MetricsService {
 
         return metrics;
     }
-}
 
+    private List<UserRequestMetric> collectUserRequestMetrics(List<Object[]> userData, UUID orgId) {
+        List<UserRequestMetric> metrics = new ArrayList<>();
+
+        for (var i : userData) {
+            List<Object> dataList = Arrays.stream(i).toList();
+            UUID apiId = (UUID) dataList.get(0);
+            Optional<API> api = apiService.getAPI(apiId, orgId);
+            if (api.isPresent()) {
+                metrics.add(UserRequestMetric.fromData(dataList, api.get()));
+            }
+        }
+        return metrics;
+    }
+}

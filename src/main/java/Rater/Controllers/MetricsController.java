@@ -5,6 +5,7 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Metrics.ApiMetric;
 import Rater.Models.Metrics.OrgMetric;
+import Rater.Models.Metrics.UserRequestMetric;
 import Rater.Models.Metrics.UserUsageMetric;
 import Rater.Models.Org.Org;
 import Rater.Security.SecurityService;
@@ -63,5 +64,14 @@ public class MetricsController {
         throwIfNoAuth(org);
 
         return ResponseEntity.ok(metricsService.getUserUsageMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), startTime, endTime));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/users/{data}", method = GET)
+    public ResponseEntity<List<UserRequestMetric>> getUserMetrics(@PathVariable String data, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        return ResponseEntity.ok(metricsService.getUserRequestMetrics(data, org.map(Org::getId).orElseThrow(UnauthorizedException::new), startTime, endTime));
     }
 }
