@@ -24,26 +24,26 @@ public class RuleCreateRequest {
         this.limit = limit;
         this.apiId = apiId;
 
-        if (userId != null) {
+        if (userId != null && !userId.isBlank()) {
             if (userIp != null || role != null) {
                 throw new BadRequestException();
             } else {
                 ruleType = RuleType.id;
             }
-        } else if (userIp != null) {
+        } else if (userIp != null && !userIp.isBlank()) {
             if (userId != null || role != null) {
                 throw new BadRequestException();
             } else {
                 ruleType = RuleType.ip;
             }
-        } else if (role != null) {
+        } else if (role != null && !role.isBlank()) {
             if (userId != null || userIp != null) {
                 throw new BadRequestException();
             } else {
                 ruleType = RuleType.role;
             }
         } else {
-            throw new BadRequestException("User Id/ Ip / Role must be present");
+            throw new BadRequestException("User Id / Ip / Role must be present");
         }
     }
 
