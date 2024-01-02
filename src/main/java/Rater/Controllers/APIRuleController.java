@@ -84,6 +84,7 @@ public class APIRuleController {
         return ResponseEntity.ok(apiRuleService.searchRule(ruleSearchRequest, ruleSearchQuery, api.orElseThrow(), org.orElseThrow()));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/{id}", method = DELETE)
     public ResponseEntity<?> deleteApiRule(@PathVariable UUID id) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
