@@ -6,6 +6,7 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgCreateRequest;
+import Rater.Models.Org.OrgUpdateRequest;
 import Rater.Models.User.User;
 import Rater.Models.User.UserRole;
 import Rater.Security.SecurityService;
@@ -49,19 +50,29 @@ public class OrgController {
         return ResponseEntity.ok(orgService.createOrg(orgCreateRequest));
     }
 
+    @PreAuthorize("@securityService.hasOrg(#orgId)")
+    @RequestMapping(value = "/{orgId}", method = PUT)
+    public ResponseEntity<Optional<Org>> updateOrg(@PathVariable UUID orgId, @RequestBody @Valid OrgUpdateRequest orgUpdateRequest) throws DataConflictException, InternalServerException, BadRequestException {
+        log.info("Update Org Request: " + orgUpdateRequest);
+
+        return ResponseEntity.ok(orgService.updateOrg(orgId, orgUpdateRequest));
+    }
+
     @PreAuthorize("@securityService.hasOrg(#org)")
     @RequestMapping(value = "/{org}", method = GET)
     public ResponseEntity<Optional<Org>> getOrg(@PathVariable String org) {
         return ResponseEntity.ok(orgService.getOrg(org));
     }
 
-    @CrossOrigin
-    @RequestMapping(value = "", method = GET)
-    public ResponseEntity<?> getOrgs(@RequestParam(required = false) UUID orgId) {
-        if (orgId != null) {
-            return ResponseEntity.ok(orgService.getOrg(orgId));
+    @RequestMapping(value = "/health/{org}", method = GET)
+    public ResponseEntity<Optional<Org>> getOrgHealth(@PathVariable String org) {
+        Optional<Org> requestedOrg = orgService.getOrg(org);
+
+        if (!requestedOrg.map(Org::isHealthPageEnabled).get()) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(orgService.getOrgs());
+
+        return ResponseEntity.ok(requestedOrg);
     }
 
     @CrossOrigin

@@ -6,6 +6,7 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Models.App.App;
 import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgCreateRequest;
+import Rater.Models.Org.OrgUpdateRequest;
 import Rater.Repositories.OrgRepository;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
@@ -67,5 +68,14 @@ public class OrgService {
             appService.deleteApp(a);
         }
         orgRepository.deleteById(orgId);
+    }
+
+    public Optional<Org> updateOrg(UUID orgId, OrgUpdateRequest orgUpdateRequest) {
+        Optional<Org> org = getOrg(orgId);
+        if (org.isPresent()) {
+            org.get().setHealthPageEnabled(orgUpdateRequest.getHealthCheckEnabled());
+            return Optional.of(orgRepository.save(org.get()));
+        }
+        return Optional.empty();
     }
 }

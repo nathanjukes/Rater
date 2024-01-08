@@ -27,6 +27,8 @@ public class Org {
     @OneToMany(mappedBy = "org", cascade = CascadeType.ALL)
     private Set<User> users;
 
+    private Boolean healthPageEnabled;
+
     public Org(String name) {
         this.name = name;
     }
@@ -65,6 +67,14 @@ public class Org {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public boolean isHealthPageEnabled() {
+        return healthPageEnabled == null ? false : healthPageEnabled;
+    }
+
+    public void setHealthPageEnabled(Boolean healthPageEnabled) {
+        this.healthPageEnabled = healthPageEnabled;
     }
 
     public static Org from(OrgCreateRequest orgCreateRequest) {
