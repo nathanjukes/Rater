@@ -50,6 +50,7 @@ public class OrgController {
         return ResponseEntity.ok(orgService.createOrg(orgCreateRequest));
     }
 
+    @CrossOrigin
     @PreAuthorize("@securityService.hasOrg(#orgId)")
     @RequestMapping(value = "/{orgId}", method = PUT)
     public ResponseEntity<Optional<Org>> updateOrg(@PathVariable UUID orgId, @RequestBody @Valid OrgUpdateRequest orgUpdateRequest) throws DataConflictException, InternalServerException, BadRequestException {
@@ -64,6 +65,7 @@ public class OrgController {
         return ResponseEntity.ok(orgService.getOrg(org));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/health/{org}", method = GET)
     public ResponseEntity<Optional<Org>> getOrgHealth(@PathVariable String org) {
         Optional<Org> requestedOrg = orgService.getOrg(org);
