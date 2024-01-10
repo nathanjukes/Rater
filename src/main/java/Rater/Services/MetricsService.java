@@ -79,6 +79,11 @@ public class MetricsService {
         return collectUserUsageMetrics(userUsageMetrics, orgId);
     }
 
+    public List<UserUsageMetric> getTrackedUsersMetrics(UUID orgId, List<String> trackedUsers) throws BadRequestException {
+        List<Object[]> trackedUserMetrics = metricsRepository.getTrackedUserMetrics(orgId, trackedUsers);
+        return collectUserUsageMetrics(trackedUserMetrics, orgId);
+    }
+
     public List<UserRequestMetric> getUserRequestMetrics(String userData, UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;

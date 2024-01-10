@@ -26,6 +26,9 @@ public interface MetricsRepository extends JpaRepository<RequestMetric, UUID> {
     @Query(value = "SELECT m.user_data, (SELECT api_id FROM metrics m2 WHERE m2.user_data = m.user_data ORDER BY timestamp DESC LIMIT 1) AS apiIdLastRequest, MIN(m.timestamp) AS firstRequestTime, MAX(m.timestamp) AS lastRequestTime, SUM(CASE WHEN m.request_accepted = true THEN 1 ELSE 0 END) AS requestsAccepted, SUM(CASE WHEN m.request_accepted = false THEN 1 ELSE 0 END) AS requestsDenied, COUNT(*) / COUNT(DISTINCT CAST(m.timestamp AS DATE)) AS avgRequestsPerDay FROM metrics m WHERE org_id = ?1 GROUP BY m.user_data", nativeQuery = true)
     List<Object[]> getUserUsageMetrics(UUID orgId);
 
+    @Query(value = "SELECT m.user_data, (SELECT api_id FROM metrics m2 WHERE m2.user_data = m.user_data ORDER BY timestamp DESC LIMIT 1) AS apiIdLastRequest, MIN(m.timestamp) AS firstRequestTime, MAX(m.timestamp) AS lastRequestTime, SUM(CASE WHEN m.request_accepted = true THEN 1 ELSE 0 END) AS requestsAccepted, SUM(CASE WHEN m.request_accepted = false THEN 1 ELSE 0 END) AS requestsDenied, COUNT(*) / COUNT(DISTINCT CAST(m.timestamp AS DATE)) AS avgRequestsPerDay FROM metrics m WHERE org_id = ?1 AND m.user_data IN ?2 GROUP BY m.user_data", nativeQuery = true)
+    List<Object[]> getTrackedUserMetrics(UUID orgId, List<String> ids);
+
     @Query(value = "SELECT api_id, timestamp, request_accepted FROM metrics WHERE user_data = ?1 AND org_id = ?2 ORDER BY timestamp DESC", nativeQuery = true)
     List<Object[]> getUserMetrics(String userData, UUID orgId);
 }
