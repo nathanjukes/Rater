@@ -7,14 +7,14 @@ import java.util.UUID;
 
 public class UserAlertCreateRequest {
     @NotNull
-    private UUID userId;
+    private String userData;
 
     @JsonCreator
-    public UserAlertCreateRequest(UUID userId) {
-        this.userId = userId;
+    public UserAlertCreateRequest(String userData) {
+        this.userData = userData;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public String getUserData() {
+        return userData;
     }
 }

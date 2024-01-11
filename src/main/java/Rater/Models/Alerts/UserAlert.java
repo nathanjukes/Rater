@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "orgUserAlerts", uniqueConstraints = @UniqueConstraint(columnNames = {"orgId", "userId"}))
+@Table(name = "orgUserAlerts", uniqueConstraints = @UniqueConstraint(columnNames = {"orgId", "userData"}))
 public class UserAlert {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,11 +16,11 @@ public class UserAlert {
     @JoinColumn(name = "orgId")
     private Org org;
 
-    private UUID userId;
+    private String userData;
 
-    public UserAlert(Org org, UUID userId) {
+    public UserAlert(Org org, String userData) {
         this.org = org;
-        this.userId = userId;
+        this.userData = userData;
     }
 
     public UserAlert() {
@@ -31,7 +31,7 @@ public class UserAlert {
         return org.getId();
     }
 
-    public UUID getUserId() {
-        return userId;
+    public String getUserData() {
+        return userData;
     }
 }

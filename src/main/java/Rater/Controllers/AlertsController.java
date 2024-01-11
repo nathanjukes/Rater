@@ -3,6 +3,7 @@ package Rater.Controllers;
 import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.Alerts.OrgAlertUpdateRequest;
 import Rater.Models.Alerts.UserAlertCreateRequest;
 import Rater.Models.Metrics.UserRequestMetric;
 import Rater.Models.Metrics.UserUsageMetric;
@@ -53,8 +54,8 @@ public class AlertsController {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
-        alertsService.configureUserAlert(org.orElseThrow(), userAlertCreateRequest.getUserId());
-        log.info("Saved user alert for OrgId: {} UserId: {}", org.map(Org::getId).orElseThrow(), userAlertCreateRequest.getUserId());
+        alertsService.configureUserAlert(org.orElseThrow(), userAlertCreateRequest.getUserData());
+        log.info("Saved user alert for OrgId: {} UserId: {}", org.map(Org::getId).orElseThrow(), userAlertCreateRequest.getUserData());
 
         return ResponseEntity.ok().build();
     }
@@ -66,5 +67,16 @@ public class AlertsController {
         throwIfNoAuth(org);
 
         return ResponseEntity.ok(alertsService.getUserAlerts(org.map(Org::getId).orElseThrow()));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/settings", method = POST)
+    public ResponseEntity<List<UserUsageMetric>> setOrgAlertSettings(@RequestBody @Valid OrgAlertUpdateRequest orgAlertUpdateRequest) throws InternalServerException, UnauthorizedException, BadRequestException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        alertsService.saveOrgAlertSettings(org.orElseThrow(), orgAlertUpdateRequest);
+
+        return ResponseEntity.ok().build();
     }
 }
