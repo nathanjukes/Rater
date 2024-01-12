@@ -19,6 +19,6 @@ public interface UserAlertsRepository extends JpaRepository<UserAlert, UUID> {
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM user_data WHERE org_id = ?1 AND user_data = ?2", nativeQuery = true)
+    @Query(value = "DELETE FROM org_user_alerts WHERE org_id = ?1 AND user_data = ?2", nativeQuery = true)
     void deleteByUserData(UUID orgId, String userData);
 }
