@@ -34,8 +34,12 @@ public class AlertsService {
         this.metricsService = metricsService;
     }
 
-    public void configureUserAlert(Org org, String userId) {
-        userAlertsRepository.save(new UserAlert(org, userId));
+    public void configureUserAlert(Org org, String userData) {
+        userAlertsRepository.save(new UserAlert(org, userData));
+    }
+
+    public void deleteUserAlert(Org org, String userData) {
+        userAlertsRepository.deleteByUserData(org.getId(), userData);
     }
 
     public List<UserUsageMetric> getUserAlerts(UUID orgId) throws BadRequestException {

@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static Rater.Security.SecurityService.throwIfNoAuth;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping("/alerts")
@@ -55,9 +54,21 @@ public class AlertsController {
         throwIfNoAuth(org);
 
         alertsService.configureUserAlert(org.orElseThrow(), userAlertCreateRequest.getUserData());
-        log.info("Saved user alert for OrgId: {} UserId: {}", org.map(Org::getId).orElseThrow(), userAlertCreateRequest.getUserData());
+        log.info("Saved user alert for OrgId: {} UserData: {}", org.map(Org::getId).orElseThrow(), userAlertCreateRequest.getUserData());
 
         return ResponseEntity.ok().build();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/users/{userData}", method = DELETE)
+    public ResponseEntity<?> createUserAlert(@PathVariable String userData) throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        log.info("Delete user alert for OrgId: {} UserDatta: {}", org.map(Org::getId).orElseThrow(), userData);
+        alertsService.deleteUserAlert(org.orElseThrow(), userData);
+
+        return ResponseEntity.noContent().build();
     }
 
     @CrossOrigin
