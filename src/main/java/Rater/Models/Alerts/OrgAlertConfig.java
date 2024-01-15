@@ -70,10 +70,10 @@ public class OrgAlertConfig {
     }
 
     public void updateSettings(OrgAlertUpdateRequest orgAlertUpdateRequest) {
-        setUserDenialThreshold(orgAlertUpdateRequest.getUserDenialThreshold());
-        setApiDenialThreshold(orgAlertUpdateRequest.getApiDenialThreshold());
-        setUserSurgeThreshold(orgAlertUpdateRequest.getUserSurgeThreshold());
-        setApiSurgeThreshold(orgAlertUpdateRequest.getApiSurgeThreshold());
+        setUserDenialThreshold(orgAlertUpdateRequest.getUserDenialThreshold() == null ? this.userDenialThreshold : orgAlertUpdateRequest.getUserDenialThreshold());
+        setApiDenialThreshold(orgAlertUpdateRequest.getApiDenialThreshold() == null ? this.apiDenialThreshold : orgAlertUpdateRequest.getApiDenialThreshold());
+        setUserSurgeThreshold(orgAlertUpdateRequest.getUserSurgeThreshold() == null ? this.userSurgeThreshold : orgAlertUpdateRequest.getUserSurgeThreshold());
+        setApiSurgeThreshold(orgAlertUpdateRequest.getApiSurgeThreshold() == null ? this.apiSurgeThreshold : orgAlertUpdateRequest.getApiSurgeThreshold());
     }
 
     public static OrgAlertConfig from(OrgAlertUpdateRequest orgAlertUpdateRequest, Org org) {
