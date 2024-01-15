@@ -51,6 +51,16 @@ public class AlertsService {
         return userAlertsRepository.findByOrgId(orgId);
     }
 
+    public Optional<OrgAlertConfig> getOrgAlertSettings(Org org) {
+        Optional<OrgAlertConfig> orgAlertConfig = orgAlertConfigRepository.findByOrgId(org.getId());
+
+        if (orgAlertConfig.isPresent()) {
+            return orgAlertConfig;
+        }
+
+        return Optional.of(OrgAlertConfig.from(org));
+    }
+
     public void saveOrgAlertSettings(Org org, OrgAlertUpdateRequest orgAlertUpdateRequest) {
         Optional<OrgAlertConfig> orgAlertConfig = orgAlertConfigRepository.findByOrgId(org.getId());
 

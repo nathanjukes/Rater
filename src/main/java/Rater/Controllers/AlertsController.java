@@ -81,6 +81,15 @@ public class AlertsController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/settings", method = GET)
+    public ResponseEntity<Optional<?>> getOrgAlertSettings() throws InternalServerException, UnauthorizedException, BadRequestException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        return ResponseEntity.ok(alertsService.getOrgAlertSettings(org.orElseThrow()));
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/settings", method = POST)
     public ResponseEntity<List<UserUsageMetric>> setOrgAlertSettings(@RequestBody @Valid OrgAlertUpdateRequest orgAlertUpdateRequest) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();

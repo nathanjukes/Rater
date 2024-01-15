@@ -83,4 +83,8 @@ public class OrgAlertConfig {
                 orgAlertUpdateRequest.getUserSurgeThreshold(),
                 orgAlertUpdateRequest.getApiSurgeThreshold());
     }
+
+    public static OrgAlertConfig from(Org org) {
+        return new OrgAlertConfig(org, null, null, null, null);
+    }
 }
