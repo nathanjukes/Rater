@@ -7,8 +7,8 @@ public class ApiMetric {
     private double acceptedCount;
     private double deniedCount;
     private double totalThroughput;
-    private Map<UUID, Long> topUsersAccepted;
-    private Map<UUID, Long> topUsersDenied;
+    private Map<String, Long> topUsersAccepted;
+    private Map<String, Long> topUsersDenied;
 
     public ApiMetric(Double acceptedCount, Double deniedCount, List<Object[]> topUsersAccepted, List<Object[]> topUsersDenied) {
         this.acceptedCount = acceptedCount;
@@ -30,18 +30,18 @@ public class ApiMetric {
         return totalThroughput;
     }
 
-    public Map<UUID, Long> getTopUsersAccepted() {
+    public Map<String, Long> getTopUsersAccepted() {
         return topUsersAccepted;
     }
 
-    public Map<UUID, Long> getTopUsersDenied() {
+    public Map<String, Long> getTopUsersDenied() {
         return topUsersDenied;
     }
 
-    private Map<UUID, Long> castToMap(List<Object[]> data) {
+    private Map<String, Long> castToMap(List<Object[]> data) {
         return data.stream()
                 .collect(Collectors.toMap(
-                        arr -> UUID.fromString((String) arr[0]),
+                        arr -> (String) arr[0],
                         arr -> (Long) arr[1],
                         (existing, replacement) -> existing,
                         LinkedHashMap::new
