@@ -67,4 +67,24 @@ public class OrgMetric {
     public int getUniqueRules() {
         return uniqueRules;
     }
+
+    public Long getThroughput() {
+        return throughput;
+    }
+
+    public Long getAcceptedRequests() {
+        return acceptedRequests;
+    }
+
+    public Long getDeniedRequests() {
+        return deniedRequests;
+    }
+
+    public List<Object[]> getHighestAcceptedAPIs() {
+        return highestAcceptedAPIs;
+    }
+
+    public List<Object[]> getLowestAcceptedAPIs() {
+        return lowestAcceptedAPIs;
+    }
 }
