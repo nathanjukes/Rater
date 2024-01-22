@@ -27,13 +27,16 @@ public class OrgMetric {
 
     private List<Object[]> lowestAcceptedAPIs;
 
-    public OrgMetric(List<App> appList, List<Object[]> highestAcceptedAPIs, List<Object[]> lowestAcceptedAPIs, List<Object[]> metadata) {
+    private List<Object[]> requestList;
+
+    public OrgMetric(List<App> appList, List<Object[]> highestAcceptedAPIs, List<Object[]> lowestAcceptedAPIs, List<Object[]> metadata, List<Object[]> requestData) {
         createOverviewMetrics(appList);
         this.highestAcceptedAPIs = highestAcceptedAPIs;
         this.lowestAcceptedAPIs = lowestAcceptedAPIs;
         this.throughput = (Long) Arrays.stream(metadata.get(0)).toList().get(0);
         this.acceptedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(1);
         this.deniedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(2);
+        this.requestList = requestData;
     }
 
     private void createOverviewMetrics(List<App> appList) {
@@ -86,5 +89,9 @@ public class OrgMetric {
 
     public List<Object[]> getLowestAcceptedAPIs() {
         return lowestAcceptedAPIs;
+    }
+
+    public List<Object[]> getRequestList() {
+        return requestList;
     }
 }
