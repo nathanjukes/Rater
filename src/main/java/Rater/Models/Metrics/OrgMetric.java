@@ -16,11 +16,11 @@ public class OrgMetric {
 
     private int uniqueRules;
 
-    private int throughput;
+    private Long throughput;
 
-    private int acceptedRequests;
+    private Long acceptedRequests;
 
-    private int deniedRequests;
+    private Long deniedRequests;
 
 
     private List<Object[]> highestAcceptedAPIs;
@@ -31,9 +31,9 @@ public class OrgMetric {
         createOverviewMetrics(appList);
         this.highestAcceptedAPIs = highestAcceptedAPIs;
         this.lowestAcceptedAPIs = lowestAcceptedAPIs;
-        this.throughput = (int) Arrays.stream(metadata.get(0)).toList().get(0);
-        this.acceptedRequests = (int) Arrays.stream(metadata.get(0)).toList().get(1);
-        this.deniedRequests = (int) Arrays.stream(metadata.get(0)).toList().get(2);
+        this.throughput = (Long) Arrays.stream(metadata.get(0)).toList().get(0);
+        this.acceptedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(1);
+        this.deniedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(2);
     }
 
     private void createOverviewMetrics(List<App> appList) {
