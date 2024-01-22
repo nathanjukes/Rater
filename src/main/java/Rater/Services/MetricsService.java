@@ -66,8 +66,9 @@ public class MetricsService {
         List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId);
         List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId);
         List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, lb, ub);
+        List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, lb, ub);
 
-        return new OrgMetric(appService.getApps(orgId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData);
+        return new OrgMetric(appService.getApps(orgId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData, topUsers);
     }
 
     public List<UserUsageMetric> getUserUsageMetrics(UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
