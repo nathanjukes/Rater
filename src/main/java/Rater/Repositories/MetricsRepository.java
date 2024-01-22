@@ -41,6 +41,6 @@ public interface MetricsRepository extends JpaRepository<RequestMetric, UUID> {
     @Query(value = "SELECT m.api_id, a.name, a.http_method, a.flat_structure, COUNT(m.api_id) AS deniedRequests FROM metrics m JOIN apis a ON m.api_id = a.id WHERE m.org_id = ?1 AND m.request_accepted = 'false' GROUP BY m.api_id, a.name, a.http_method, a.flat_structure ORDER BY deniedRequests DESC LIMIT 5", nativeQuery = true)
     List<Object[]> getOrgLeastAcceptedAPIs(UUID orgId);
 
-    @Query(value = "SELECT DATE_TRUNC('second', timestamp) AS timestamp, COUNT(*) AS requestCount FROM metrics WHERE org_id = ?1 GROUP BY DATE_TRUNC('second', timestamp) ORDER BY timestamp", nativeQuery = true)
-    List<Object[]> getOrgRequestList(UUID orgId);
+    @Query(value = "SELECT DATE_TRUNC('second', timestamp) AS timestamp, COUNT(*) AS requestCount FROM metrics WHERE org_id = ?1 AND timestamp > ?2 AND timestamp < ?3 GROUP BY DATE_TRUNC('second', timestamp) ORDER BY timestamp", nativeQuery = true)
+    List<Object[]> getOrgRequestList(UUID orgId, Date lb, Date ub);
 }
