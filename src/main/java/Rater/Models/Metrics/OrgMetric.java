@@ -4,10 +4,7 @@ import Rater.Models.API.API;
 import Rater.Models.App.App;
 import Rater.Models.Service.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class OrgMetric {
@@ -19,8 +16,24 @@ public class OrgMetric {
 
     private int uniqueRules;
 
-    public OrgMetric(List<App> appList) {
+    private int throughput;
+
+    private int acceptedRequests;
+
+    private int deniedRequests;
+
+
+    private List<Object[]> highestAcceptedAPIs;
+
+    private List<Object[]> lowestAcceptedAPIs;
+
+    public OrgMetric(List<App> appList, List<Object[]> highestAcceptedAPIs, List<Object[]> lowestAcceptedAPIs, List<Object[]> metadata) {
         createOverviewMetrics(appList);
+        this.highestAcceptedAPIs = highestAcceptedAPIs;
+        this.lowestAcceptedAPIs = lowestAcceptedAPIs;
+        this.throughput = (int) Arrays.stream(metadata.get(0)).toList().get(0);
+        this.acceptedRequests = (int) Arrays.stream(metadata.get(0)).toList().get(1);
+        this.deniedRequests = (int) Arrays.stream(metadata.get(0)).toList().get(2);
     }
 
     private void createOverviewMetrics(List<App> appList) {
@@ -53,15 +66,5 @@ public class OrgMetric {
 
     public int getUniqueRules() {
         return uniqueRules;
-    }
-
-    private Map<String, Long> castToMap(List<Object[]> data) {
-        return data.stream()
-                .collect(Collectors.toMap(
-                        arr -> (String) arr[0],
-                        arr -> (Long) arr[1],
-                        (existing, replacement) -> existing,
-                        LinkedHashMap::new
-                ));
     }
 }
