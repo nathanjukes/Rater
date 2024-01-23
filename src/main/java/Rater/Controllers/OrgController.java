@@ -6,10 +6,12 @@ import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
 import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgCreateRequest;
+import Rater.Models.Org.OrgHealth;
 import Rater.Models.Org.OrgUpdateRequest;
 import Rater.Models.User.User;
 import Rater.Models.User.UserRole;
 import Rater.Security.SecurityService;
+import Rater.Services.MetricsService;
 import Rater.Services.OrgService;
 import Rater.Services.UserService;
 import jakarta.validation.Valid;
@@ -35,12 +37,14 @@ public class OrgController {
     private final OrgService orgService;
     private final UserService userService;
     private final SecurityService securityService;
+    private final MetricsService metricsService;
 
     @Autowired
-    public OrgController(OrgService orgService, UserService userService, SecurityService securityService) {
+    public OrgController(OrgService orgService, UserService userService, SecurityService securityService, MetricsService metricsService) {
         this.orgService = orgService;
         this.userService = userService;
         this.securityService = securityService;
+        this.metricsService = metricsService;
     }
 
     @RequestMapping(value = "", method = POST)
@@ -67,14 +71,16 @@ public class OrgController {
 
     @CrossOrigin
     @RequestMapping(value = "/health/{org}", method = GET)
-    public ResponseEntity<Optional<Org>> getOrgHealth(@PathVariable String org) {
+    public ResponseEntity<Optional<OrgHealth>> getOrgHealth(@PathVariable String org) {
         Optional<Org> requestedOrg = orgService.getOrg(org);
 
         if (!requestedOrg.map(Org::isHealthPageEnabled).get()) {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok(requestedOrg);
+        Optional<OrgHealth> orgHealth = metricsService.getOrgHealth(requestedOrg.orElseThrow());
+
+        return ResponseEntity.ok(orgHealth);
     }
 
     @CrossOrigin

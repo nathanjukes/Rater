@@ -6,6 +6,8 @@ import Rater.Models.Metrics.ApiMetric;
 import Rater.Models.Metrics.OrgMetric;
 import Rater.Models.Metrics.UserRequestMetric;
 import Rater.Models.Metrics.UserUsageMetric;
+import Rater.Models.Org.Org;
+import Rater.Models.Org.OrgHealth;
 import Rater.Repositories.MetricsRepository;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
@@ -104,6 +106,10 @@ public class MetricsService {
 
         List<Object[]> userRequestMetrics = metricsRepository.getUserMetrics(userData, orgId);
         return collectUserRequestMetrics(userRequestMetrics, orgId);
+    }
+
+    public Optional<OrgHealth> getOrgHealth(Org org) {
+        return Optional.ofNullable(OrgHealth.from(org));
     }
 
     private List<UserUsageMetric> collectUserUsageMetrics(List<Object[]> userData, UUID orgId) {
