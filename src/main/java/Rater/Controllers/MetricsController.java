@@ -47,20 +47,29 @@ public class MetricsController {
 
     @CrossOrigin
     @RequestMapping(value = "/orgs", method = GET)
-    public ResponseEntity<OrgMetric> getOrgMetrics(@RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
+    public ResponseEntity<Optional<?>> getOrgMetrics(@RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
-        return ResponseEntity.ok(metricsService.getOrgMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), startTime, endTime));
+        return ResponseEntity.ok(metricsService.getMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), null, null, null, startTime, endTime));
     }
 
     @CrossOrigin
     @RequestMapping(value = "/apps/{appId}", method = GET)
-    public ResponseEntity<AppMetric> getOrgMetrics(@PathVariable UUID appId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
+    public ResponseEntity<Optional<?>> getOrgMetrics(@PathVariable UUID appId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
-        return ResponseEntity.ok(metricsService.getAppMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), appId, startTime, endTime));
+        return ResponseEntity.ok(metricsService.getMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), appId, null, null, startTime, endTime));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/apps/{appId}/services/{serviceId}", method = GET)
+    public ResponseEntity<Optional<?>> getOrgMetrics(@PathVariable UUID appId, @PathVariable UUID serviceId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        return ResponseEntity.ok(metricsService.getMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), appId, serviceId, null, startTime, endTime));
     }
 
     @CrossOrigin

@@ -51,7 +51,7 @@ public class MetricsService {
         return new ApiMetric(acceptedRate, deniedRate, topUsersAccepted, topUsersDenied);
     }
 
-    public OrgMetric getOrgMetrics(UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
+    public Optional<?> getMetrics(UUID orgId, UUID appId, UUID serviceId, UUID apiId, Instant lowerBound, Instant upperBound) throws BadRequestException {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;
         if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
@@ -63,34 +63,40 @@ public class MetricsService {
         Date ub = Date.from(upperBound);
 
         //List<Object[]> orgMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, null);
-        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, null);
-        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, null);
-        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, null, lb, ub);
-        List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, null, lb, ub);
+        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId, serviceId, appId);
+        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, appId, serviceId, apiId);
+        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, appId, serviceId, apiId);
+        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, appId, serviceId, apiId, lb, ub);
+        List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, appId, serviceId, apiId, lb, ub);
 
-        return new OrgMetric(appService.getApps(orgId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData, topUsers);
-    }
-
-    public AppMetric getAppMetrics(UUID orgId, UUID appId, Instant lowerBound, Instant upperBound) throws BadRequestException {
-        lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
-        upperBound = upperBound == null ? Instant.now() : upperBound;
-        if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
-            log.info("Get Org Metrics Request Denied, bad time inputs: {} {}", lowerBound, upperBound);
-            throw new BadRequestException();
-        }
-
-        Date lb = Date.from(lowerBound);
-        Date ub = Date.from(upperBound);
-
-        //List<Object[]> orgMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId);
-        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, appId);
-        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, appId);
-        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, appId, lb, ub);
-        List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, appId, lb, ub);
-
-        return new AppMetric(serviceService.getServices(orgId, appId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData, topUsers);
+        if (apiId != null) {
+            return Optional.empty();
+        } else if (serviceId != null) {
+            return Optional.of(new ServiceMetric(
+                    apiService.getAPIs(orgId, appId, serviceId).orElse(Collections.emptyList()),
+                    highestAcceptedAPIs,
+                    lowestAcceptedAPIs,
+                    metadataMetrics,
+                    requestData,
+                    topUsers)
+            );
+        } else if (appId != null) {
+            return Optional.of(new AppMetric(
+                    serviceService.getServices(orgId, appId).orElse(Collections.emptyList()),
+                    highestAcceptedAPIs,
+                    lowestAcceptedAPIs,
+                    metadataMetrics,
+                    requestData,
+                    topUsers)
+            );        }
+        return Optional.of(new OrgMetric(
+                appService.getApps(orgId).orElse(Collections.emptyList()),
+                highestAcceptedAPIs,
+                lowestAcceptedAPIs,
+                metadataMetrics,
+                requestData,
+                topUsers)
+        );
     }
 
     public List<UserUsageMetric> getUserUsageMetrics(UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
