@@ -3,10 +3,14 @@ package Rater.Controllers;
 import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.App.App;
 import Rater.Models.Metrics.*;
 import Rater.Models.Org.Org;
+import Rater.Models.Service.Service;
 import Rater.Security.SecurityService;
+import Rater.Services.AppService;
 import Rater.Services.MetricsService;
+import Rater.Services.ServiceService;
 import jakarta.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,11 +32,13 @@ public class MetricsController {
     private static final Logger log = LogManager.getLogger(MetricsController.class);
 
     private final MetricsService metricsService;
+    private final ServiceService serviceService;
     private final SecurityService securityService;
 
     @Autowired
-    public MetricsController(MetricsService metricsService, SecurityService securityService) {
+    public MetricsController(MetricsService metricsService, ServiceService serviceService, SecurityService securityService) {
         this.metricsService = metricsService;
+        this.serviceService = serviceService;
         this.securityService = securityService;
     }
 
@@ -64,12 +70,17 @@ public class MetricsController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/apps/{appId}/{serviceId}", method = GET)
-    public ResponseEntity<Optional<?>> getServiceMetrics(@PathVariable UUID appId, @PathVariable UUID serviceId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
+    @RequestMapping(value = "/services/{serviceId}", method = GET)
+    public ResponseEntity<Optional<?>> getServiceMetrics(@PathVariable UUID serviceId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
-        return ResponseEntity.ok(metricsService.getMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), appId, serviceId, null, startTime, endTime));
+        Optional<Service> service = serviceService.getService(serviceId);
+        if (!service.map(Service::getOrgId).equals(org.map(Org::getId))) {
+            throw new UnauthorizedException();
+        }
+
+        return ResponseEntity.ok(metricsService.getMetrics(org.map(Org::getId).orElseThrow(UnauthorizedException::new), service.map(Service::getAppId).orElseThrow(), serviceId, null, startTime, endTime));
     }
 
     @CrossOrigin
