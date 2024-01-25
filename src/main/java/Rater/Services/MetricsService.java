@@ -63,10 +63,10 @@ public class MetricsService {
         Date ub = Date.from(upperBound);
 
         //List<Object[]> orgMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId);
-        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId);
-        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, lb, ub);
+        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, null);
+        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, null);
+        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, null);
+        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, null, lb, ub);
         List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, null, lb, ub);
 
         return new OrgMetric(appService.getApps(orgId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData, topUsers);
@@ -84,10 +84,10 @@ public class MetricsService {
         Date ub = Date.from(upperBound);
 
         //List<Object[]> orgMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId);
-        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId);
-        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, lb, ub);
+        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId);
+        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, appId);
+        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, appId);
+        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, appId, lb, ub);
         List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, appId, lb, ub);
 
         return new AppMetric(serviceService.getServices(orgId, appId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData, topUsers);

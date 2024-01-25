@@ -32,17 +32,17 @@ public interface MetricsRepository extends JpaRepository<RequestMetric, UUID> {
     @Query(value = "SELECT api_id, timestamp, request_accepted FROM metrics WHERE user_data = ?1 AND org_id = ?2 ORDER BY timestamp DESC", nativeQuery = true)
     List<Object[]> getUserMetrics(String userData, UUID orgId);
 
-    @Query(value = "SELECT count(*), COUNT(CASE WHEN request_accepted THEN 1 END) AS accepted_count, COUNT(CASE WHEN NOT(request_accepted) THEN 1 END) as denied_count FROM metrics WHERE org_id = ?1", nativeQuery = true)
-    List<Object[]> getOrgMetrics(UUID orgId);
+    @Query(value = "SELECT count(*), COUNT(CASE WHEN request_accepted THEN 1 END) AS accepted_count, COUNT(CASE WHEN NOT(request_accepted) THEN 1 END) as denied_count FROM metrics WHERE org_id = ?1 AND (COALESCE(?2, app_id) = app_id)", nativeQuery = true)
+    List<Object[]> getOrgMetrics(UUID orgId, UUID appId);
 
-    @Query(value = "SELECT m.api_id, a.name, a.http_method, a.flat_structure, COUNT(m.api_id) AS acceptedRequests FROM metrics m JOIN apis a ON m.api_id = a.id WHERE m.org_id = ?1 AND m.request_accepted = 'true' GROUP BY m.api_id, a.name, a.http_method, a.flat_structure ORDER BY acceptedRequests DESC LIMIT 5", nativeQuery = true)
-    List<Object[]> getOrgMostAcceptedAPIs(UUID orgId);
+    @Query(value = "SELECT m.api_id, a.name, a.http_method, a.flat_structure, COUNT(m.api_id) AS acceptedRequests FROM metrics m JOIN apis a ON m.api_id = a.id WHERE m.org_id = ?1 AND (COALESCE(?2, m.app_id) = m.app_id) AND m.request_accepted = 'true' GROUP BY m.api_id, a.name, a.http_method, a.flat_structure ORDER BY acceptedRequests DESC LIMIT 5", nativeQuery = true)
+    List<Object[]> getOrgMostAcceptedAPIs(UUID orgId, UUID appId);
 
-    @Query(value = "SELECT m.api_id, a.name, a.http_method, a.flat_structure, COUNT(m.api_id) AS deniedRequests FROM metrics m JOIN apis a ON m.api_id = a.id WHERE m.org_id = ?1 AND m.request_accepted = 'false' GROUP BY m.api_id, a.name, a.http_method, a.flat_structure ORDER BY deniedRequests DESC LIMIT 5", nativeQuery = true)
-    List<Object[]> getOrgLeastAcceptedAPIs(UUID orgId);
+    @Query(value = "SELECT m.api_id, a.name, a.http_method, a.flat_structure, COUNT(m.api_id) AS deniedRequests FROM metrics m JOIN apis a ON m.api_id = a.id WHERE m.org_id = ?1 AND (COALESCE(?2, m.app_id) = m.app_id) AND m.request_accepted = 'false' GROUP BY m.api_id, a.name, a.http_method, a.flat_structure ORDER BY deniedRequests DESC LIMIT 5", nativeQuery = true)
+    List<Object[]> getOrgLeastAcceptedAPIs(UUID orgId, UUID appId);
 
-    @Query(value = "SELECT DATE_TRUNC('second', timestamp) AS timestamp, COUNT(*) AS requestCount FROM metrics WHERE org_id = ?1 AND timestamp > ?2 AND timestamp < ?3 GROUP BY DATE_TRUNC('second', timestamp) ORDER BY timestamp", nativeQuery = true)
-    List<Object[]> getOrgRequestList(UUID orgId, Date lb, Date ub);
+    @Query(value = "SELECT DATE_TRUNC('second', timestamp) AS timestamp, COUNT(*) AS requestCount FROM metrics WHERE org_id = ?1 AND (COALESCE(?2, app_id) = app_id) AND timestamp > ?3 AND timestamp < ?4 GROUP BY DATE_TRUNC('second', timestamp) ORDER BY timestamp", nativeQuery = true)
+    List<Object[]> getOrgRequestList(UUID orgId, UUID appId, Date lb, Date ub);
 
     @Query(value = "SELECT m.user_data, COUNT(m.user_data) AS request_count FROM metrics m WHERE m.org_id = ?1 AND (COALESCE(?2, m.app_id) = m.app_id) AND timestamp > ?3 AND timestamp < ?4 GROUP BY m.user_data ORDER BY request_count DESC LIMIT 5", nativeQuery = true)
     List<Object[]> getOrgTopUsers(UUID orgId, UUID appId,  Date lb, Date ub);
