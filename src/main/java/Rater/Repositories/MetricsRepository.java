@@ -44,6 +44,6 @@ public interface MetricsRepository extends JpaRepository<RequestMetric, UUID> {
     @Query(value = "SELECT DATE_TRUNC('second', timestamp) AS timestamp, COUNT(*) AS requestCount FROM metrics WHERE org_id = ?1 AND timestamp > ?2 AND timestamp < ?3 GROUP BY DATE_TRUNC('second', timestamp) ORDER BY timestamp", nativeQuery = true)
     List<Object[]> getOrgRequestList(UUID orgId, Date lb, Date ub);
 
-    @Query(value = "SELECT m.user_data,  COUNT(m.user_data) AS request_count FROM metrics m WHERE m.org_id = ?1 AND timestamp > ?2 AND timestamp < ?3 GROUP BY m.user_data ORDER BY request_count DESC LIMIT 5", nativeQuery = true)
-    List<Object[]> getOrgTopUsers(UUID orgId,  Date lb, Date ub);
+    @Query(value = "SELECT m.user_data, COUNT(m.user_data) AS request_count FROM metrics m WHERE m.org_id = ?1 AND (COALESCE(?2, m.app_id) = m.app_id) AND timestamp > ?3 AND timestamp < ?4 GROUP BY m.user_data ORDER BY request_count DESC LIMIT 5", nativeQuery = true)
+    List<Object[]> getOrgTopUsers(UUID orgId, UUID appId,  Date lb, Date ub);
 }

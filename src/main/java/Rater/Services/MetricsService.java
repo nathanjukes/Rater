@@ -2,10 +2,7 @@ package Rater.Services;
 
 import Rater.Exceptions.BadRequestException;
 import Rater.Models.API.API;
-import Rater.Models.Metrics.ApiMetric;
-import Rater.Models.Metrics.OrgMetric;
-import Rater.Models.Metrics.UserRequestMetric;
-import Rater.Models.Metrics.UserUsageMetric;
+import Rater.Models.Metrics.*;
 import Rater.Models.Org.Org;
 import Rater.Models.Org.OrgHealth;
 import Rater.Repositories.MetricsRepository;
@@ -25,11 +22,13 @@ public class MetricsService {
     private final int SECONDS_IN_DAY = 86400;
     private MetricsRepository metricsRepository;
     private AppService appService;
+    private ServiceService serviceService;
     private APIService apiService;
 
-    public MetricsService(MetricsRepository metricsRepository, AppService appService, APIService apiService) {
+    public MetricsService(MetricsRepository metricsRepository, AppService appService, ServiceService serviceService, APIService apiService) {
         this.metricsRepository = metricsRepository;
         this.appService = appService;
+        this.serviceService = serviceService;
         this.apiService = apiService;
     }
 
@@ -68,9 +67,30 @@ public class MetricsService {
         List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId);
         List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId);
         List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, lb, ub);
-        List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, lb, ub);
+        List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, null, lb, ub);
 
         return new OrgMetric(appService.getApps(orgId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData, topUsers);
+    }
+
+    public AppMetric getAppMetrics(UUID orgId, UUID appId, Instant lowerBound, Instant upperBound) throws BadRequestException {
+        lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
+        upperBound = upperBound == null ? Instant.now() : upperBound;
+        if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
+            log.info("Get Org Metrics Request Denied, bad time inputs: {} {}", lowerBound, upperBound);
+            throw new BadRequestException();
+        }
+
+        Date lb = Date.from(lowerBound);
+        Date ub = Date.from(upperBound);
+
+        //List<Object[]> orgMetrics = metricsRepository.getOrgMetrics(orgId);
+        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId);
+        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId);
+        List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId);
+        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, lb, ub);
+        List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, appId, lb, ub);
+
+        return new AppMetric(serviceService.getServices(orgId, appId).orElse(Collections.emptyList()), highestAcceptedAPIs, lowestAcceptedAPIs, metadataMetrics, requestData, topUsers);
     }
 
     public List<UserUsageMetric> getUserUsageMetrics(UUID orgId, Instant lowerBound, Instant upperBound) throws BadRequestException {
