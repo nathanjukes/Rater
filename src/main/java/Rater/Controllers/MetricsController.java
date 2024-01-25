@@ -64,8 +64,8 @@ public class MetricsController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/apps/{appId}/services/{serviceId}", method = GET)
-    public ResponseEntity<Optional<?>> getOrgMetrics(@PathVariable UUID appId, @PathVariable UUID serviceId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
+    @RequestMapping(value = "/apps/{appId}/{serviceId}", method = GET)
+    public ResponseEntity<Optional<?>> getServiceMetrics(@PathVariable UUID appId, @PathVariable UUID serviceId, @RequestParam @Nullable Instant startTime, @RequestParam @Nullable Instant endTime) throws InternalServerException, UnauthorizedException, BadRequestException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
