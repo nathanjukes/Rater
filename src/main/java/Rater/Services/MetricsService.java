@@ -55,7 +55,7 @@ public class MetricsService {
         lowerBound = lowerBound == null ? Instant.now().minusSeconds(SECONDS_IN_DAY) : lowerBound;
         upperBound = upperBound == null ? Instant.now() : upperBound;
         if (lowerBound.isAfter(upperBound) || upperBound.minusSeconds(SECONDS_IN_DAY + 1000).isAfter(lowerBound)) {
-            log.info("Get Org Metrics Request Denied, bad time inputs: {} {}", lowerBound, upperBound);
+            log.info("Get Metrics Request Denied, bad time inputs: {} {}", lowerBound, upperBound);
             throw new BadRequestException();
         }
 
@@ -63,7 +63,7 @@ public class MetricsService {
         Date ub = Date.from(upperBound);
 
         //List<Object[]> orgMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId, serviceId, appId);
+        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId, serviceId, apiId);
         List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, appId, serviceId, apiId);
         List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, appId, serviceId, apiId);
         List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, appId, serviceId, apiId, lb, ub);
