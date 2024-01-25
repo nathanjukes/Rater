@@ -39,7 +39,6 @@ public class AppMetric {
 
     private void createOverviewMetrics(List<Service> serviceList) {
         this.serviceCount = serviceList.size();
-        this.serviceCount = serviceList.stream().mapToInt(app -> app.getApis().size()).sum();
 
         this.apiCount = serviceList.stream()
                 .mapToInt(service -> service.getApis().size())
