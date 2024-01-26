@@ -47,8 +47,9 @@ public class MetricsService {
         Double deniedRate = metricsRepository.getDeniedCount(apiId, lb, ub);
         List<Object[]> topUsersAccepted = metricsRepository.getTopUsersAccepted(apiId, lb, ub, 10);
         List<Object[]> topUsersDenied = metricsRepository.getTopUsersDenied(apiId, lb, ub, 10);
+        List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, null, null, apiId, lb, ub);
 
-        return new ApiMetric(acceptedRate, deniedRate, topUsersAccepted, topUsersDenied);
+        return new ApiMetric(acceptedRate, deniedRate, topUsersAccepted, topUsersDenied, requestData);
     }
 
     public Optional<?> getMetrics(UUID orgId, UUID appId, UUID serviceId, UUID apiId, Instant lowerBound, Instant upperBound) throws BadRequestException {

@@ -10,14 +10,16 @@ public class ApiMetric {
     private double successRate;
     private Map<String, Long> topUsersAccepted;
     private Map<String, Long> topUsersDenied;
+    private List<Object[]> requestList;
 
-    public ApiMetric(Double acceptedCount, Double deniedCount, List<Object[]> topUsersAccepted, List<Object[]> topUsersDenied) {
+    public ApiMetric(Double acceptedCount, Double deniedCount, List<Object[]> topUsersAccepted, List<Object[]> topUsersDenied, List<Object[]> requestList) {
         this.acceptedCount = acceptedCount;
         this.deniedCount = deniedCount;
         this.totalThroughput = acceptedCount + deniedCount;
         this.successRate = acceptedCount / totalThroughput;
         this.topUsersAccepted = castToMap(topUsersAccepted);
         this.topUsersDenied = castToMap(topUsersDenied);
+        this.requestList = requestList;
     }
 
     public double getAcceptedCount() {
@@ -42,6 +44,10 @@ public class ApiMetric {
 
     public Map<String, Long> getTopUsersDenied() {
         return topUsersDenied;
+    }
+
+    public List<Object[]> getRequestList() {
+        return requestList;
     }
 
     private Map<String, Long> castToMap(List<Object[]> data) {
