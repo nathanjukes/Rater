@@ -135,7 +135,12 @@ public class MetricsService {
     }
 
     public Optional<OrgHealth> getOrgHealth(Org org) {
-        return Optional.ofNullable(OrgHealth.from(org));
+        Date lb = Date.from(Instant.now().minusSeconds(SECONDS_IN_DAY));
+        Date ub = Date.from(Instant.now());
+
+        List<Object[]> metadataMetrics = metricsRepository.getOrgHealthMetrics(org.getId(), lb, ub);
+
+        return Optional.ofNullable(OrgHealth.from(org, metadataMetrics));
     }
 
     private List<UserUsageMetric> collectUserUsageMetrics(List<Object[]> userData, UUID orgId) {

@@ -46,4 +46,7 @@ public interface MetricsRepository extends JpaRepository<RequestMetric, UUID> {
 
     @Query(value = "SELECT m.user_data, COUNT(m.user_data) AS request_count FROM metrics m WHERE m.org_id = ?1 AND (COALESCE(?2, m.app_id) = m.app_id) AND (COALESCE(?3, m.service_id) = m.service_id) AND (COALESCE(?4, m.api_id) = m.api_id) AND timestamp > ?5 AND timestamp < ?6 GROUP BY m.user_data ORDER BY request_count DESC LIMIT 5", nativeQuery = true)
     List<Object[]> getOrgTopUsers(UUID orgId, UUID appId, UUID serviceId, UUID apiId, Date lb, Date ub);
+
+    @Query(value = "SELECT count(*), COUNT(CASE WHEN request_accepted THEN 1 END) AS accepted_count, COUNT(CASE WHEN NOT(request_accepted) THEN 1 END) as denied_count FROM metrics WHERE org_id = ?1 AND timestamp > ?2 AND timestamp < ?3", nativeQuery = true)
+    List<Object[]> getOrgHealthMetrics(UUID orgId, Date lb, Date ub);
 }
