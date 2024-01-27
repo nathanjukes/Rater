@@ -63,9 +63,8 @@ public class MetricsService {
         Date lb = Date.from(lowerBound);
         Date ub = Date.from(upperBound);
 
-        //List<Object[]> orgMetrics = metricsRepository.getOrgMetrics(orgId);
-        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId, serviceId, apiId);
-        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, appId, serviceId, apiId);
+        List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId, serviceId, apiId, lb, ub);
+        List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, appId, serviceId, apiId, lb, ub);
         List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, appId, serviceId, apiId, lb, ub);
         List<Object[]> requestData = metricsRepository.getOrgRequestList(orgId, appId, serviceId, apiId, lb, ub);
         List<Object[]> topUsers = metricsRepository.getOrgTopUsers(orgId, appId, serviceId, apiId, lb, ub);
