@@ -17,6 +17,10 @@ public class OrgHealth {
         return name;
     }
 
+    public List<Object[]> getMetadata() {
+        return metadata;
+    }
+
     public static OrgHealth from(Org org, List<Object[]> metadataMetrics) {
         return new OrgHealth(org.getName(), metadataMetrics);
     }
