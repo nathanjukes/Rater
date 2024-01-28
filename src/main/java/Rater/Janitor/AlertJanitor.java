@@ -23,7 +23,7 @@ public class AlertJanitor {
     public AlertJanitor(AlertsRepository alertsRepository) {
         this.alertsRepository = alertsRepository;
     }
-    @Scheduled(fixedRate = 1200000) // every 20 seconds
+    @Scheduled(fixedRate = 20000) // every 20 seconds
     public void alertMonitoring() {
         final Date timestampMinuteAgo = Date.from(Instant.now().minusSeconds(60));
         final Date timestamp = Date.from(Instant.now());
