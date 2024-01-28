@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -14,13 +15,21 @@ import java.util.UUID;
 public class OrgAlert {
     @Id
     private UUID orgId;
+    private String data;
     private int deniedCount;
     private int totalCount;
+    private Date startTime;
+    private Date endTime;
+    private boolean isUser;
 
-    public OrgAlert(UUID orgId, int deniedCount, int totalCount) {
+    public OrgAlert(UUID orgId, String data, int deniedCount, int totalCount, Date startTime, Date endTime, boolean isUser) {
         this.orgId = orgId;
+        this.data = data;
         this.deniedCount = deniedCount;
         this.totalCount = totalCount;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isUser = isUser;
     }
 
     public OrgAlert() {
@@ -31,11 +40,27 @@ public class OrgAlert {
         return orgId;
     }
 
+    public String getData() {
+        return data;
+    }
+
     public int getDeniedCount() {
         return deniedCount;
     }
 
     public int getTotalCount() {
         return totalCount;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public boolean isUser() {
+        return isUser;
     }
 }

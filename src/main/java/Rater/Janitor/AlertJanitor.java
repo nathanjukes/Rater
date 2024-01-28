@@ -1,6 +1,7 @@
 package Rater.Janitor;
 
 import Rater.Repositories.AlertsRepository;
+import Rater.Services.AlertsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,14 @@ public class AlertJanitor {
     private static final Logger log = LogManager.getLogger(AlertJanitor.class);
 
     private AlertsRepository alertsRepository;
+    private AlertsService alertsService;
+
     @Autowired
-    public AlertJanitor(AlertsRepository alertsRepository) {
+    public AlertJanitor(AlertsRepository alertsRepository, AlertsService alertsService) {
         this.alertsRepository = alertsRepository;
+        this.alertsService = alertsService;
     }
+
     @Scheduled(fixedRate = 20000) // every 20 seconds
     public void alertMonitoring() {
         final Date timestampMinuteAgo = Date.from(Instant.now().minusSeconds(60));
@@ -32,5 +37,8 @@ public class AlertJanitor {
 
         List<Object[]> apiAlerts = alertsRepository.getApiAlertData(timestampMinuteAgo, timestamp);
         List<Object[]> userAlerts = alertsRepository.getUserAlertData(timestampMinuteAgo, timestamp);
+
+        alertsService.saveApiAlerts(apiAlerts, timestampMinuteAgo, timestamp);
+        alertsService.saveUserAlerts(userAlerts, timestampMinuteAgo, timestamp);
     }
 }

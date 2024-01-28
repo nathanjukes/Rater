@@ -16,10 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AlertsService {
@@ -40,6 +37,42 @@ public class AlertsService {
 
     public Optional<OrgAlert> getAlerts(UUID orgId) {
         return alertsRepository.getOrgAlert(orgId);
+    }
+
+    public void saveApiAlerts(List<Object[]> alerts, Date lb, Date ub) {
+        // [0] = orgId
+        // [1] = apiId
+        // [2] = denied
+        // [3] = total
+        for (var i : alerts) {
+            OrgAlert orgAlert = new OrgAlert(
+                    UUID.fromString(String.valueOf(i[0])),
+                    String.valueOf(i[1]),
+                    (Integer) i[2],
+                    (Integer) i[3],
+                    lb,
+                    ub,
+                    false
+            );
+
+            alertsRepository.save(orgAlert);
+        }
+    }
+
+    public void saveUserAlerts(List<Object[]> alerts, Date lb, Date ub) {
+        for (var i : alerts) {
+            OrgAlert orgAlert = new OrgAlert(
+                    UUID.fromString(String.valueOf(i[0])),
+                    String.valueOf(i[1]),
+                    (Integer) i[2],
+                    (Integer) i[3],
+                    lb,
+                    ub,
+                    true
+            );
+
+            alertsRepository.save(orgAlert);
+        }
     }
 
     public void configureUserAlert(Org org, String userData) {
