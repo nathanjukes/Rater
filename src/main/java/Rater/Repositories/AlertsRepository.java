@@ -1,7 +1,9 @@
 package Rater.Repositories;
 
 import Rater.Models.Alerts.OrgAlert;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -21,4 +23,9 @@ public interface AlertsRepository extends JpaRepository<OrgAlert, UUID> {
 
     @Query(value = "SELECT org_alert_config.org_id as org_id, m.user_data, SUM(CASE WHEN m.request_accepted = false THEN 1 ELSE 0 END) as denied, COUNT(*) as total FROM org_alert_config JOIN metrics m ON org_alert_config.org_id = m.org_id WHERE m.timestamp > ?1 AND m.timestamp < ?2 GROUP BY org_alert_config.org_id, org_alert_config.user_denial_threshold, org_alert_config.user_surge_threshold, m.user_data HAVING SUM(CASE WHEN m.request_accepted = false THEN 1 ELSE 0 END) >= org_alert_config.user_denial_threshold OR COUNT(*) >= org_alert_config.user_surge_threshold", nativeQuery = true)
     List<Object[]> getUserAlertData(Date lb, Date ub);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM alerts WHERE id = ?1 AND org_id = ?2", nativeQuery = true)
+    void deleteByIdAndOrgId(UUID id, UUID orgId);
 }

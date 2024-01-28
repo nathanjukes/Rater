@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static Rater.Security.SecurityService.throwIfNoAuth;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -50,6 +51,17 @@ public class AlertsController {
         throwIfNoAuth(org);
 
         return ResponseEntity.ok(alertsService.getAlerts(org.map(Org::getId).orElseThrow()));
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/{alertId}", method = DELETE)
+    public ResponseEntity<?> deleteAlert(@PathVariable UUID alertId) throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        alertsService.deleteAlert(org.map(Org::getId).orElseThrow(), alertId);
+
+        return ResponseEntity.ok().build();
     }
 
     @CrossOrigin

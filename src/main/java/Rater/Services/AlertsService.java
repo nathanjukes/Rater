@@ -11,6 +11,7 @@ import Rater.Models.Org.Org;
 import Rater.Repositories.AlertsRepository;
 import Rater.Repositories.OrgAlertConfigRepository;
 import Rater.Repositories.UserAlertsRepository;
+import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@Transactional
 public class AlertsService {
     private static final Logger log = LogManager.getLogger(AlertsService.class);
 
@@ -37,6 +39,10 @@ public class AlertsService {
 
     public Optional<List<OrgAlert>> getAlerts(UUID orgId) {
         return alertsRepository.getOrgAlerts(orgId);
+    }
+
+    public void deleteAlert(UUID orgId, UUID alertId) {
+        alertsRepository.deleteByIdAndOrgId(alertId, orgId);
     }
 
     public void saveApiAlerts(List<Object[]> alerts, Date lb, Date ub) {
