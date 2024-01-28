@@ -2,11 +2,13 @@ package Rater.Services;
 
 import Rater.Controllers.OrgController;
 import Rater.Exceptions.BadRequestException;
+import Rater.Models.Alerts.OrgAlert;
 import Rater.Models.Alerts.OrgAlertConfig;
 import Rater.Models.Alerts.OrgAlertUpdateRequest;
 import Rater.Models.Alerts.UserAlert;
 import Rater.Models.Metrics.UserUsageMetric;
 import Rater.Models.Org.Org;
+import Rater.Repositories.AlertsRepository;
 import Rater.Repositories.OrgAlertConfigRepository;
 import Rater.Repositories.UserAlertsRepository;
 import org.apache.logging.log4j.LogManager;
@@ -25,13 +27,19 @@ public class AlertsService {
 
     private final UserAlertsRepository userAlertsRepository;
     private final OrgAlertConfigRepository orgAlertConfigRepository;
+    private final AlertsRepository alertsRepository;
     private final MetricsService metricsService;
 
     @Autowired
-    public AlertsService(UserAlertsRepository userAlertsRepository, OrgAlertConfigRepository orgAlertConfigRepository, MetricsService metricsService) {
+    public AlertsService(UserAlertsRepository userAlertsRepository, OrgAlertConfigRepository orgAlertConfigRepository, AlertsRepository alertsRepository, MetricsService metricsService) {
         this.userAlertsRepository = userAlertsRepository;
         this.orgAlertConfigRepository = orgAlertConfigRepository;
+        this.alertsRepository = alertsRepository;
         this.metricsService = metricsService;
+    }
+
+    public Optional<OrgAlert> getAlerts(UUID orgId) {
+        return alertsRepository.getOrgAlert(orgId);
     }
 
     public void configureUserAlert(Org org, String userData) {

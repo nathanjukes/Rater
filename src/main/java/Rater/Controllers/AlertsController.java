@@ -3,18 +3,15 @@ package Rater.Controllers;
 import Rater.Exceptions.BadRequestException;
 import Rater.Exceptions.InternalServerException;
 import Rater.Exceptions.UnauthorizedException;
+import Rater.Models.Alerts.OrgAlert;
 import Rater.Models.Alerts.OrgAlertUpdateRequest;
 import Rater.Models.Alerts.UserAlertCreateRequest;
-import Rater.Models.Metrics.UserRequestMetric;
 import Rater.Models.Metrics.UserUsageMetric;
 import Rater.Models.Org.Org;
-import Rater.Models.User.User;
-import Rater.Models.User.UserRole;
 import Rater.Security.SecurityService;
 import Rater.Services.AlertsService;
 import Rater.Services.OrgService;
 import Rater.Services.UserService;
-import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +44,15 @@ public class AlertsController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "", method = GET)
+    public ResponseEntity<Optional<OrgAlert>> getAlerts() throws InternalServerException, UnauthorizedException {
+        Optional<Org> org = securityService.getAuthedOrg();
+        throwIfNoAuth(org);
+
+        return ResponseEntity.ok(alertsService.getAlerts(org.map(Org::getId).orElseThrow()));
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/users", method = POST)
     public ResponseEntity<?> createUserAlert(@RequestBody @Valid UserAlertCreateRequest userAlertCreateRequest) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
@@ -65,7 +70,7 @@ public class AlertsController {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
-        log.info("Delete user alert for OrgId: {} UserDatta: {}", org.map(Org::getId).orElseThrow(), userData);
+        log.info("Delete user alert for OrgId: {} UserData: {}", org.map(Org::getId).orElseThrow(), userData);
         alertsService.deleteUserAlert(org.orElseThrow(), userData);
 
         return ResponseEntity.noContent().build();
