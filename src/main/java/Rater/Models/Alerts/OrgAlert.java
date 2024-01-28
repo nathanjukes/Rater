@@ -36,6 +36,10 @@ public class OrgAlert {
 
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public UUID getOrgId() {
         return orgId;
     }
