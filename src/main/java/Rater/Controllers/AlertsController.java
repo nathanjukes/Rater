@@ -45,7 +45,7 @@ public class AlertsController {
 
     @CrossOrigin
     @RequestMapping(value = "", method = GET)
-    public ResponseEntity<Optional<OrgAlert>> getAlerts() throws InternalServerException, UnauthorizedException {
+    public ResponseEntity<Optional<List<OrgAlert>>> getAlerts() throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 

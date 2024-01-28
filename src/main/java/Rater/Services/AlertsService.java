@@ -35,8 +35,8 @@ public class AlertsService {
         this.metricsService = metricsService;
     }
 
-    public Optional<OrgAlert> getAlerts(UUID orgId) {
-        return alertsRepository.getOrgAlert(orgId);
+    public Optional<List<OrgAlert>> getAlerts(UUID orgId) {
+        return alertsRepository.getOrgAlerts(orgId);
     }
 
     public void saveApiAlerts(List<Object[]> alerts, Date lb, Date ub) {
