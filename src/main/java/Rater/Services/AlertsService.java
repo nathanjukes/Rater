@@ -48,8 +48,8 @@ public class AlertsService {
             OrgAlert orgAlert = new OrgAlert(
                     UUID.fromString(String.valueOf(i[0])),
                     String.valueOf(i[1]),
-                    (Integer) i[2],
-                    (Integer) i[3],
+                    (Long) i[2],
+                    (Long) i[3],
                     lb,
                     ub,
                     false
@@ -64,8 +64,8 @@ public class AlertsService {
             OrgAlert orgAlert = new OrgAlert(
                     UUID.fromString(String.valueOf(i[0])),
                     String.valueOf(i[1]),
-                    (Integer) i[2],
-                    (Integer) i[3],
+                    (Long) i[2],
+                    (Long) i[3],
                     lb,
                     ub,
                     true

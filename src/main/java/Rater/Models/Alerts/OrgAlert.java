@@ -16,13 +16,13 @@ public class OrgAlert {
     private UUID id;
     private UUID orgId;
     private String data;
-    private int deniedCount;
-    private int totalCount;
+    private Long deniedCount;
+    private Long totalCount;
     private Date startTime;
     private Date endTime;
     private boolean isUser;
 
-    public OrgAlert(UUID orgId, String data, int deniedCount, int totalCount, Date startTime, Date endTime, boolean isUser) {
+    public OrgAlert(UUID orgId, String data, Long deniedCount, Long totalCount, Date startTime, Date endTime, boolean isUser) {
         this.orgId = orgId;
         this.data = data;
         this.deniedCount = deniedCount;
@@ -44,11 +44,11 @@ public class OrgAlert {
         return data;
     }
 
-    public int getDeniedCount() {
+    public Long getDeniedCount() {
         return deniedCount;
     }
 
-    public int getTotalCount() {
+    public Long getTotalCount() {
         return totalCount;
     }
 
