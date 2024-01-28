@@ -2,9 +2,7 @@ package Rater.Models.Alerts;
 
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 
 import java.util.Date;
@@ -14,6 +12,8 @@ import java.util.UUID;
 @Table(name = "alerts")
 public class OrgAlert {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private UUID orgId;
     private String data;
     private int deniedCount;
