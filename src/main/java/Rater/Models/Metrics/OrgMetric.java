@@ -34,11 +34,14 @@ public class OrgMetric {
         createOverviewMetrics(appList);
         this.highestAcceptedAPIs = highestAcceptedAPIs;
         this.lowestAcceptedAPIs = lowestAcceptedAPIs;
-        this.throughput = (Long) Arrays.stream(metadata.get(0)).toList().get(0);
-        this.acceptedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(1);
-        this.deniedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(2);
         this.requestList = requestData;
         this.topUsers = topUsers;
+
+        if (metadata != null && metadata.size() > 0) {
+            this.throughput = (Long) Arrays.stream(metadata.get(0)).toList().get(0);
+            this.acceptedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(1);
+            this.deniedRequests = (Long) Arrays.stream(metadata.get(0)).toList().get(2);
+        }
     }
 
     private void createOverviewMetrics(List<App> appList) {
