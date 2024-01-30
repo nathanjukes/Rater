@@ -78,7 +78,7 @@ public class AlertsController {
 
     @CrossOrigin
     @RequestMapping(value = "/users/{userData}", method = DELETE)
-    public ResponseEntity<?> createUserAlert(@PathVariable String userData) throws InternalServerException, UnauthorizedException {
+    public ResponseEntity<?> deleteUserAlert(@PathVariable String userData) throws InternalServerException, UnauthorizedException {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
