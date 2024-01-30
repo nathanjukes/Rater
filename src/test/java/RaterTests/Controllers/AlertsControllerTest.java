@@ -35,8 +35,6 @@ public class AlertsControllerTest {
     @Mock
     private AlertsService alertsService;
     @Mock
-    private ServiceService serviceService;
-    @Mock
     private SecurityService securityService;
     private Org testOrg;
     private App testApp;
