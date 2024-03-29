@@ -51,6 +51,7 @@ public class ServiceController {
         Optional<App> app = appService.getApp(serviceCreateRequest.getAppId());
         Optional<Service> service = serviceService.createService(serviceCreateRequest, app, org.orElseThrow());
 
+        // Service account for other microservices
         if (service.isPresent()) {
             serviceService.createServiceAccount(new ServiceAccountCreateRequest(service.map(Service::getId).orElseThrow()), org.orElseThrow());
             return ResponseEntity.ok(service);
@@ -90,6 +91,7 @@ public class ServiceController {
 
         log.info("Delete Service Request: " + serviceId);
 
+        // Org validation
         if (!serviceService.getService(serviceId).map(Service::getOrgId).equals(org.map(Org::getId))) {
             return ResponseEntity.notFound().build();
         }

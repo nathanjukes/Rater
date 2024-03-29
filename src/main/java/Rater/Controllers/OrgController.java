@@ -95,6 +95,7 @@ public class OrgController {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
+        // Validate user is owner of org
         if (!securityService.getAuthedUser().map(User::getRole).orElseThrow().equals(UserRole.owner)) {
             throw new UnauthorizedException();
         }

@@ -79,6 +79,7 @@ public class AppController {
 
         log.info("Delete App Request: " + appId);
 
+        // Validate org auth
         if (!appService.getApp(appId).map(App::getOrgId).equals(org.map(Org::getId))) {
            return ResponseEntity.notFound().build();
         }

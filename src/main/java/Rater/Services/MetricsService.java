@@ -43,6 +43,7 @@ public class MetricsService {
         Date lb = Date.from(lowerBound);
         Date ub = Date.from(upperBound);
 
+        // Collecting necessary metrics
         Double acceptedRate = metricsRepository.getAcceptedCount(apiId, lb, ub);
         Double deniedRate = metricsRepository.getDeniedCount(apiId, lb, ub);
         List<Object[]> topUsersAccepted = metricsRepository.getTopUsersAccepted(apiId, lb, ub, 10);
@@ -63,6 +64,7 @@ public class MetricsService {
         Date lb = Date.from(lowerBound);
         Date ub = Date.from(upperBound);
 
+        // Collecting necessary metrics
         List<Object[]> highestAcceptedAPIs = metricsRepository.getOrgMostAcceptedAPIs(orgId, appId, serviceId, apiId, lb, ub);
         List<Object[]> lowestAcceptedAPIs = metricsRepository.getOrgLeastAcceptedAPIs(orgId, appId, serviceId, apiId, lb, ub);
         List<Object[]> metadataMetrics = metricsRepository.getOrgMetrics(orgId, appId, serviceId, apiId, lb, ub);

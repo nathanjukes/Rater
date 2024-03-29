@@ -85,6 +85,7 @@ public class APIService {
     }
 
     private void deleteRules(API api) {
+        // Three rule types
         Optional.ofNullable(api)
                 .map(API::getIdRules)
                 .ifPresent(rules -> rules.forEach(r -> apiRuleService.deleteRule(r)));

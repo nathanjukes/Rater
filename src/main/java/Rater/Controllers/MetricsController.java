@@ -75,6 +75,7 @@ public class MetricsController {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
+        // Validate auth
         Optional<Service> service = serviceService.getService(serviceId);
         if (!service.map(Service::getOrgId).equals(org.map(Org::getId))) {
             throw new UnauthorizedException();

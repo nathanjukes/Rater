@@ -67,6 +67,8 @@ public class UserService {
 
     public int deleteUser(UUID id, Org org, boolean orgDelete) throws BadRequestException, InternalServerException, UnauthorizedException {
         Optional<User> user = getUser(id);
+
+        // Validates the user deleted is not an owner/admin unless the org is being deleted
         if (user.map(User::getRole).orElseThrow().equals(UserRole.user) || orgDelete) {
             refreshTokenService.deleteRefreshToken(id);
         } else {

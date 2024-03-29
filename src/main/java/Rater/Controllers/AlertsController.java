@@ -59,6 +59,7 @@ public class AlertsController {
         Optional<Org> org = securityService.getAuthedOrg();
         throwIfNoAuth(org);
 
+        // Try to delete, will throw an error if not completed
         alertsService.deleteAlert(org.map(Org::getId).orElseThrow(), alertId);
 
         return ResponseEntity.ok().build();

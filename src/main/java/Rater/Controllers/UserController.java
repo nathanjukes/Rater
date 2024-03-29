@@ -92,6 +92,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, updateRequest, org.orElseThrow()));
     }
 
+    // Only owner/admins can operate with certain actions
     private boolean isAuthedToOperate(Optional<User> auth) {
         return !auth.map(User::getRole).get().equals(UserRole.user);
     }

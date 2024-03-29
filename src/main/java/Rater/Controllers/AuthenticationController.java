@@ -71,9 +71,11 @@ public class AuthenticationController {
 
         log.info("User Registration Request - OrgId: " + userOrg.map(Org::getId).get());
 
+        // Try to create user, if not, delete org temporarily made
         try {
             Optional<User> user = userService.createUser(userCreateRequest, userOrg.orElseThrow(), passwordEncoder);
 
+            // Creating JWT and Refresh Token, refresh token is persisted to postgres
             TokenResponse jwt = jwtUtil.generateTokenResponse(user.map(User::getEmail).orElseThrow());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
             jwt.setRefreshToken(refreshToken.getToken().toString());
@@ -127,6 +129,7 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(auth);
         TokenResponse jwt = jwtUtil.generateTokenResponse(auth);
 
+        // Create new refresh token
         refreshTokenService.deleteRefreshToken(securityService.getAuthedUser());
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(securityService.getAuthedUser());

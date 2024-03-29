@@ -47,6 +47,7 @@ public class APIController {
 
         log.info("Create API Request: ", apiCreateRequest.toString());
 
+        // Validate service Id provided
         Optional<Service> service = serviceService.getService(apiCreateRequest.getServiceId());
         if (service.isEmpty() || !service.map(s -> s.getOrgId()).get().equals(org.orElseThrow().getId())) {
             log.info("API Create Denied, Invalid Service: " + apiCreateRequest.toString());
@@ -88,9 +89,11 @@ public class APIController {
 
         log.info("Delete API Request: " + apiId);
 
+        // Validate auth
         if (!apiService.getAPI(apiId).map(API::getOrgId).equals(org.map(Org::getId))) {
             return ResponseEntity.notFound().build();
         }
+
         apiService.deleteAPI(apiId, org.get());
         return ResponseEntity.ok("Deleted: " + org.map(o -> o.getName()).orElseThrow() + "/" + apiId);
     }
